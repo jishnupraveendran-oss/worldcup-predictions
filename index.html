@@ -133,38 +133,44 @@ function editGroup(g){const idx=GROUP_KEYS.indexOf(g);currentStep=idx+1;updProg(
 function goBackReview(){currentStep=GROUP_KEYS.length;updProg();showPage('page-group-L')}
 function doSubmit(){
   const btn=document.getElementById('sub-btn');
-  btn.textContent='⏳ Checking...';
+  btn.textContent='⏳ Submitting...';
   btn.disabled=true;
-  const params=new URLSearchParams();
-  params.append('email',userEmail);
-  GROUP_KEYS.forEach(g=>params.append(g,predictions[g]||''));
-  fetch(SCRIPT_URL,{method:'POST',body:params})
-    .then(r=>r.json())
-    .then(data=>{
-      if(data.ok){
-        showSuccess();
-      } else if(data.message==='already_submitted'){
-        document.getElementById('already-email').textContent=userEmail;
-        document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
-        document.getElementById('page-already').classList.add('active');
-        window.scrollTo({top:0,behavior:'smooth'});
-      } else {
-        btn.textContent='🏆 Submit Predictions';
-        btn.disabled=false;
-        alert('Error: '+data.message);
-      }
-    })
-    .catch(()=>{
-      // CORS fallback: submit and show success
-      const f=document.createElement('form');
-      f.method='POST';f.action=SCRIPT_URL;f.target='hid-frame';f.style.display='none';
-      const add=(n,v)=>{const i=document.createElement('input');i.type='hidden';i.name=n;i.value=v||'';f.appendChild(i)};
-      add('email',userEmail);
-      GROUP_KEYS.forEach(g=>add(g,predictions[g]));
-      document.body.appendChild(f);f.submit();document.body.removeChild(f);
-      setTimeout(showSuccess,1500);
+
+  // Build hidden form for maximum browser compatibility (Safari iOS)
+  const f=document.createElement('form');
+  f.method='POST';
+  f.action=SCRIPT_URL;
+  f.target='hid-frame';
+  f.style.display='none';
+
+  const add=(n,v)=>{
+    const i=document.createElement('input');
+    i.type='hidden';i.name=n;i.value=v||'';
+    f.appendChild(i);
+  };
+
+  add('email',userEmail);
+  // Group stage keys
+  if(typeof GROUP_KEYS!=='undefined'){
+    GROUP_KEYS.forEach(g=>add(g,predictions[g]||''));
+  }
+  // Match stage keys
+  if(typeof MATCH_KEYS!=='undefined'){
+    MATCH_KEYS.forEach(m=>{
+      add(m,picks[m]||'');
+      if(scores[m]) add('score_'+m,scores[m]);
     });
+  }
+  if(typeof SHEET_TAB!=='undefined') add('tab',SHEET_TAB);
+
+  document.body.appendChild(f);
+  f.submit();
+  document.body.removeChild(f);
+
+  // Show success after short delay (can't read iframe response cross-origin)
+  setTimeout(()=>showPage('page-success'),1800);
 }
+
 function showSuccess(){document.getElementById('pred-tags').innerHTML=GROUP_KEYS.map(g=>`<span class="tag">Group ${g}: ${predictions[g]||'—'}</span>`).join('');currentStep=14;updProg();showPage('page-success')}
 document.getElementById('email-input').addEventListener('input',validateEmail);document.getElementById('email-input').addEventListener('keydown',e=>{if(e.key==='Enter')goEmail()});
 </script>

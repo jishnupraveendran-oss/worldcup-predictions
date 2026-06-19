@@ -582,16 +582,15 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 
 <!-- Review Page -->
 <div class="pg" id="page-review">
-  <div class="grp-hero"><div class="kicker">Final Step</div><h2>Review Your Predictions</h2></div>
+  <div class="grp-hero"><div class="kicker">Final Step</div><h2>Review Your Journey</h2></div>
   <div class="wrap"><div class="card">
-    <div class="card-title">Your Entry</div>
+    <div class="card-title">Your Prediction Journey</div>
     <div class="rev-email" id="rev-email"></div>
     <div class="bracket-section">
       <div class="bracket-title-bar">⚽ Round of 32 → Round of 16 Journey</div>
       <div class="bracket-graphic"><div class="bracket-grid" id="bracketGrid"></div></div>
     </div>
-    <div id="rev-items"></div>
-    <div class="nav" style="margin-top:18px">
+        <div class="nav" style="margin-top:18px">
       <button class="btn sec" onclick="goBackReview()">← Edit</button>
       <button class="btn pri" id="sub-btn" onclick="doSubmit()">🏆 Submit Predictions</button>
     </div>
@@ -643,7 +642,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzG7G23IoF_hQWZj-ELxBiMAg4xLb9CH_yZuS2kaR7uNfPW5z5V1iy30iy8Spd1_j7lbw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzraDVWzbLiHklDtuDzHtbuIoXlHBglI6_kt6KY8IyQSpNQ2AwD-wEPeszpD32UD1dZzg/exec';
 const MATCH_KEYS = ["M1","M2","M3","M4","M5","M6","M7","M8","M9","M10","M11","M12","M13","M14","M15","M16"];
 const SHEET_TAB  = 'R32_Responses';
 const _k = (s=>Array.from(s).map((c,i)=>String.fromCharCode(c.charCodeAt(0)^(i%7+3))).join(''))(atob('ZjQxPzFqazVmMjBia2xgZjFnYTxsYDBkZDAwOmU2NWU/bWxgNDQ+MTE9YTdhNGQ8'));
@@ -698,8 +697,20 @@ function goEmail(){
     }
   }catch(e){}
 
-  // Any device — backend check (returns picks too)
+  // Timeout safety — if backend doesn't respond in 5s, just open form
+  let done=false;
+  const timer=setTimeout(function(){
+    if(!done){
+      done=true;
+      btn.textContent='Start Predicting →';btn.disabled=false;
+      const old=document.getElementById('_jsonp_check');if(old)old.remove();
+      currentStep=1;showPage('page-match-M1');
+    }
+  },5000);
+
   window._checkCallback=function(data){
+    if(done)return;done=true;
+    clearTimeout(timer);
     btn.textContent='Start Predicting →';btn.disabled=false;
     const old=document.getElementById('_jsonp_check');if(old)old.remove();
     if(data&&data.already){
@@ -714,42 +725,20 @@ function goEmail(){
       currentStep=1;showPage('page-match-M1');
     }
   };
+
   const s=document.createElement('script');
   s.id='_jsonp_check';
   s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&callback=_checkCallback&email='+encodeURIComponent(userEmail);
-  s.onerror=function(){btn.textContent='Start Predicting →';btn.disabled=false;currentStep=1;showPage('page-match-M1');};
+  s.onerror=function(){
+    if(done)return;done=true;
+    clearTimeout(timer);
+    btn.textContent='Start Predicting →';btn.disabled=false;
+    const old=document.getElementById('_jsonp_check');if(old)old.remove();
+    currentStep=1;showPage('page-match-M1');
+  };
   document.head.appendChild(s);
 }
 
-function showAlreadyPage(email, savedPicks){
-  document.getElementById('already-email').textContent=email;
-
-  // Count
-  const count=MATCH_KEYS.filter(m=>savedPicks[m]&&savedPicks[m].trim()).length;
-  const countEl=document.getElementById('picks-count');
-  if(countEl) countEl.textContent=count+' / 16 picks';
-
-  // Bracket first
-  renderBracketIn('alreadyBracketGrid', savedPicks);
-
-  // Picks table
-  const tbody=document.getElementById('already-picks-body');
-  if(tbody){
-    tbody.innerHTML=MATCH_KEYS.map(m=>{
-      const meta=MATCH_META[m];
-      const t1=meta.teams[0],t2=meta.teams[1];
-      const pick=savedPicks[m]||'';
-      return '<tr>'+
-        '<td class="td-match">'+meta.label+'</td>'+
-        '<td class="td-teams">'+t1+' vs '+t2+'</td>'+
-        '<td>'+(pick
-          ? '<span class="picked-badge">✔️ '+pick+'</span>'
-          : '<span style="color:#718096">—</span>'
-        )+'</td></tr>';
-    }).join('');
-  }
-  showPage('page-already');
-}
 
 function selectWinner(mid,team,el){
   document.querySelectorAll('.flag-opt[data-match="'+mid+'"]').forEach(o=>o.classList.remove('sel'));
@@ -759,6 +748,14 @@ function selectWinner(mid,team,el){
 
 function nextMatch(mid){
   if(!picks[mid]){document.getElementById('warn-'+mid).classList.add('show');return;}
+  if(editingFromReview){
+    editingFromReview=false;
+    // Restore button label
+    const nextBtns=document.querySelectorAll('#page-match-'+mid+' .btn.pri');
+    nextBtns.forEach(b=>{if(b.getAttribute('data-orig'))b.textContent=b.getAttribute('data-orig');});
+    buildReview();showPage('page-review');
+    return;
+  }
   const idx=MATCH_KEYS.indexOf(mid);
   if(idx<MATCH_KEYS.length-1){showPage('page-match-'+MATCH_KEYS[idx+1]);}
   else{buildReview();showPage('page-review');}
@@ -770,26 +767,35 @@ function backMatch(mid){
   showPage('page-match-'+MATCH_KEYS[idx-1]);
 }
 
-function goBackReview(){showPage('page-match-'+MATCH_KEYS[MATCH_KEYS.length-1]);}
+function goBackReview(){showPage('page-match-M1');}
+
+let editingFromReview=false;
+function editMatch(mid){
+  editingFromReview=true;
+  showPage('page-match-'+mid);
+  // Highlight previously selected option
+  document.querySelectorAll('.flag-opt[data-match="'+mid+'"]').forEach(o=>{
+    o.classList.toggle('sel', picks[mid]===o.querySelector('input').value);
+  });
+  // Change Next button label to "Save & Review"
+  const nextBtns=document.querySelectorAll('#page-match-'+mid+' .btn.pri');
+  nextBtns.forEach(b=>{b.setAttribute('data-orig',b.textContent);b.textContent='Save & Review ✓';});
+}
 
 function buildReview(){
   document.getElementById('rev-email').textContent=userEmail;
-  // Bracket first on review too
-  renderBracketIn('bracketGrid', picks);
-  let html='';
-  MATCH_KEYS.forEach(m=>{
-    const meta=MATCH_META[m];
-    html+='<div class="rev-row"><span class="rev-lbl">'+meta.label+' ('+meta.teams[0]+' vs '+meta.teams[1]+')</span><span class="rev-val">'+(picks[m]||'—')+'</span></div>';
-  });
-  document.getElementById('rev-items').innerHTML=html;
+  renderBracketIn('bracketGrid', picks, true);
+  const el=document.getElementById('rev-items');
+  if(el) el.innerHTML='';
 }
 
-function renderBracketIn(targetId, p){
+function renderBracketIn(targetId, p, editable){
   const bg=document.getElementById(targetId);if(!bg)return;
   const left=MATCH_KEYS.slice(0,8),right=MATCH_KEYS.slice(8);
   const makeCol=keys=>keys.map(mid=>{
     const [t1,t2]=MATCH_META[mid].teams;const w=p[mid];
-    return '<div class="b-match"><div class="b-mid">'+mid+'</div>'+
+    const editBtn=editable?'<button class="edit-match-btn" onclick="editMatch(''+mid+'')">✏️ Edit</button>':'';
+    return '<div class="b-match"><div class="b-mid">'+mid+editBtn+'</div>'+
       '<div class="b-team '+(w===t1?'winner':'')+'">'+t1+'</div>'+
       '<div class="b-team '+(w===t2?'winner':'')+'">'+t2+'</div></div>';
   }).join('');

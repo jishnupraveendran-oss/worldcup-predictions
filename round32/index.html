@@ -40,10 +40,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 .inp-wrap input.bad{border-color:#ff4d4d;box-shadow:0 0 0 4px rgba(255,77,77,.15)}
 .inp-ico{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px}
 .hint{font-size:12px;color:#6b7f94;margin-top:6px}
-.err{color:#ff4444;font-size:13px;margin-top:8px;display:none;font-weight:700;
-  background:rgba(255,68,68,0.1);padding:8px 12px;border-radius:8px;border-left:3px solid #ff4444;}
-@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-.shake{animation:shake 0.5s ease;}
+.err{color:#ff6b6b;font-size:12px;margin-top:6px;display:none;font-weight:600}
 .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:14px}
 .rule{background:rgba(227,6,19,.07);border:1px solid rgba(227,6,19,.18);border-radius:14px;padding:14px}
 .rule-ico{font-size:20px;margin-bottom:5px}
@@ -111,6 +108,14 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 .td-match{color:#a0aec0;font-weight:600;font-size:12px}
 .td-teams{color:#718096;font-size:12px}
 .picked-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(246,201,14,.15);border:1px solid rgba(246,201,14,.3);color:#f6c90e;font-weight:800;font-size:13px}
+
+.edit-match-btn{
+  background:rgba(255,215,0,0.15);border:1px solid #ffd700;color:#ffd700;
+  border-radius:6px;font-size:10px;padding:3px 8px;cursor:pointer;
+  margin-left:5px;vertical-align:middle;line-height:1.6;display:inline-block;
+  min-width:54px;text-align:center;font-weight:600;
+}
+.edit-match-btn:hover,.edit-match-btn:active{background:#ffd700;color:#000;}
 </style>
 </head>
 <body>
@@ -129,7 +134,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="card-title">Enter Your Company Email</div>
       <div class="card-sub">Enter your alias email to get started.</div>
       <div class="inp-wrap">
-        <input type="email" id="email-input" placeholder="abc_cc@ofti.app" autocomplete="email" oninput="validateEmail()" onkeydown="if(event.key==='Enter')goEmail()"/>
+        <input type="email" id="email-input" placeholder="abc_cc@ofti.app" autocomplete="email"/>
         <span class="inp-ico">✉️</span>
       </div>
       <div class="hint">🔒 Only @ofti.app email addresses are allowed.</div>
@@ -594,12 +599,12 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="bracket-graphic"><div class="bracket-grid" id="bracketGrid"></div></div>
     </div>
         <div class="nav" style="margin-top:18px">
-      <button class="btn sec" onclick="goBackReview()">← Edit</button>
       <button class="btn pri" id="sub-btn" onclick="doSubmit()">🏆 Submit Predictions</button>
     </div>
   </div></div>
 </div>
 
+<div id="rev-items" style="display:none"></div>
 <!-- Success Page -->
 <div class="pg" id="page-success">
   <div class="wrap" style="margin-top:32px"><div class="card"><div class="success">
@@ -678,41 +683,68 @@ function validateEmail(){
   const inp=document.getElementById('email-input');
   const err=document.getElementById('email-err');
   const ok=/^[^\s@]+@ofti\.app$/i.test(val);
-  inp.className=val.length>0?(ok?'ok':'bad'):'';
-  if(!ok && val.length>0){
-    err.textContent=val.includes('@')
-      ? '⚠️ Only @ofti.app emails are allowed. e.g. name@ofti.app'
-      : '⚠️ Please enter your full @ofti.app email address.';
-    err.style.display='block';
-  } else {
-    err.style.display='none';
-  }
+  inp.className=val.length>3?(ok?'ok':'bad'):'';
+  err.style.display=(!ok&&val.length>3)?'block':'none';
   return ok;
 }
 
 function goEmail(){
-  if(!validateEmail()){
-    const btn=document.getElementById('email-btn');
-    btn.classList.add('shake');
-    setTimeout(()=>btn.classList.remove('shake'),600);
-    document.getElementById('email-input').focus();
-    return;
-  }
+  if(!validateEmail())return;
   userEmail=document.getElementById('email-input').value.trim();
+  const btn=document.getElementById('email-btn');
+  btn.textContent='Checking...';btn.disabled=true;
 
-  // Check localStorage first (same device duplicate check)
+  // Same device — instant from localStorage
   try{
     const done=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     const saved=done[userEmail.toLowerCase()];
     if(saved && typeof saved==='object' && Object.keys(saved).length>0){
       showAlreadyPage(userEmail, saved);
+      btn.textContent='Start Predicting →';btn.disabled=false;
       return;
     }
   }catch(e){}
 
-  // Go straight to predictions — duplicate checked again at submit
-  currentStep=1;
-  showPage('page-match-M1');
+  // Timeout safety — if backend doesn't respond in 5s, just open form
+  let done=false;
+  const timer=setTimeout(function(){
+    if(!done){
+      done=true;
+      btn.textContent='Start Predicting →';btn.disabled=false;
+      const old=document.getElementById('_jsonp_check');if(old)old.remove();
+      currentStep=1;showPage('page-match-M1');
+    }
+  },5000);
+
+  window._checkCallback=function(data){
+    if(done)return;done=true;
+    clearTimeout(timer);
+    btn.textContent='Start Predicting →';btn.disabled=false;
+    const old=document.getElementById('_jsonp_check');if(old)old.remove();
+    if(data&&data.already){
+      const savedPicks=data.picks||{};
+      try{
+        const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+        d[userEmail.toLowerCase()]=savedPicks;
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
+      }catch(e){}
+      showAlreadyPage(userEmail, savedPicks);
+    }else{
+      currentStep=1;showPage('page-match-M1');
+    }
+  };
+
+  const s=document.createElement('script');
+  s.id='_jsonp_check';
+  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&callback=_checkCallback&email='+encodeURIComponent(userEmail);
+  s.onerror=function(){
+    if(done)return;done=true;
+    clearTimeout(timer);
+    btn.textContent='Start Predicting →';btn.disabled=false;
+    const old=document.getElementById('_jsonp_check');if(old)old.remove();
+    currentStep=1;showPage('page-match-M1');
+  };
+  document.head.appendChild(s);
 }
 
 
@@ -770,10 +802,12 @@ function renderBracketIn(targetId, p, editable){
   const left=MATCH_KEYS.slice(0,8),right=MATCH_KEYS.slice(8);
   const makeCol=keys=>keys.map(mid=>{
     const [t1,t2]=MATCH_META[mid].teams;const w=p[mid];
-    const editBtn=editable?'<button class="edit-match-btn" onclick="editMatch(''+mid+'')">✏️ Edit</button>':'';
-    return '<div class="b-match"><div class="b-mid">'+mid+editBtn+'</div>'+
-      '<div class="b-team '+(w===t1?'winner':'')+'">'+t1+'</div>'+
-      '<div class="b-team '+(w===t2?'winner':'')+'">'+t2+'</div></div>';
+    const editBtn=editable?'<button class="edit-match-btn" onclick="editMatch(&quot;'+mid+'&quot;)">✏️ Edit</button>':'';
+    return '<div class="b-match">'+
+      '<div class="b-mid">'+mid+editBtn+'</div>'+
+      '<div class="b-team '+(w===t1?'winner':'')+'">'+t1+(w===t1?' ✓':'')+'</div>'+
+      '<div class="b-team '+(w===t2?'winner':'')+'">'+t2+(w===t2?' ✓':'')+'</div>'+
+    '</div>';
   }).join('');
   const centerHtml='<div class="b-center-label">ROUND OF 16</div>'+
     R16_PAIRS.map(([a,b])=>{

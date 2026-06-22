@@ -116,6 +116,9 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
   min-width:54px;text-align:center;font-weight:600;
 }
 .edit-match-btn:hover,.edit-match-btn:active{background:#ffd700;color:#000;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake 0.5s ease;}
+.err{color:#ff4444 !important;font-size:13px !important;margin-top:8px;font-weight:700;background:rgba(255,68,68,0.1);padding:8px 12px;border-radius:8px;border-left:3px solid #ff4444;}
 </style>
 </head>
 <body>
@@ -134,7 +137,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="card-title">Enter Your Company Email</div>
       <div class="card-sub">Enter your alias email to get started.</div>
       <div class="inp-wrap">
-        <input type="email" id="email-input" placeholder="abc_cc@ofti.app" autocomplete="email"/>
+        <input type="email" id="email-input" placeholder="abc_cc@ofti.app" autocomplete="email" oninput="validateEmail()" onkeydown="if(event.key==='Enter')goEmail()"/>
         <span class="inp-ico">✉️</span>
       </div>
       <div class="hint">🔒 Only @ofti.app email addresses are allowed.</div>
@@ -683,68 +686,35 @@ function validateEmail(){
   const inp=document.getElementById('email-input');
   const err=document.getElementById('email-err');
   const ok=/^[^\s@]+@ofti\.app$/i.test(val);
-  inp.className=val.length>3?(ok?'ok':'bad'):'';
-  err.style.display=(!ok&&val.length>3)?'block':'none';
+  inp.className=val.length>0?(ok?'ok':'bad'):'';
+  if(!ok&&val.length>0){
+    err.textContent=val.includes('@')
+      ?'⚠️ Only @ofti.app emails are allowed. e.g. name@ofti.app'
+      :'⚠️ Please enter your full @ofti.app email address.';
+    err.style.display='block';
+  }else{err.style.display='none';}
   return ok;
 }
 
 function goEmail(){
-  if(!validateEmail())return;
+  if(!validateEmail()){
+    const btn=document.getElementById('email-btn');
+    btn.classList.add('shake');
+    setTimeout(()=>btn.classList.remove('shake'),600);
+    document.getElementById('email-input').focus();
+    return;
+  }
   userEmail=document.getElementById('email-input').value.trim();
-  const btn=document.getElementById('email-btn');
-  btn.textContent='Checking...';btn.disabled=true;
-
-  // Same device — instant from localStorage
   try{
     const done=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     const saved=done[userEmail.toLowerCase()];
     if(saved && typeof saved==='object' && Object.keys(saved).length>0){
       showAlreadyPage(userEmail, saved);
-      btn.textContent='Start Predicting →';btn.disabled=false;
       return;
     }
   }catch(e){}
-
-  // Timeout safety — if backend doesn't respond in 5s, just open form
-  let done=false;
-  const timer=setTimeout(function(){
-    if(!done){
-      done=true;
-      btn.textContent='Start Predicting →';btn.disabled=false;
-      const old=document.getElementById('_jsonp_check');if(old)old.remove();
-      currentStep=1;showPage('page-match-M1');
-    }
-  },5000);
-
-  window._checkCallback=function(data){
-    if(done)return;done=true;
-    clearTimeout(timer);
-    btn.textContent='Start Predicting →';btn.disabled=false;
-    const old=document.getElementById('_jsonp_check');if(old)old.remove();
-    if(data&&data.already){
-      const savedPicks=data.picks||{};
-      try{
-        const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-        d[userEmail.toLowerCase()]=savedPicks;
-        localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
-      }catch(e){}
-      showAlreadyPage(userEmail, savedPicks);
-    }else{
-      currentStep=1;showPage('page-match-M1');
-    }
-  };
-
-  const s=document.createElement('script');
-  s.id='_jsonp_check';
-  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&callback=_checkCallback&email='+encodeURIComponent(userEmail);
-  s.onerror=function(){
-    if(done)return;done=true;
-    clearTimeout(timer);
-    btn.textContent='Start Predicting →';btn.disabled=false;
-    const old=document.getElementById('_jsonp_check');if(old)old.remove();
-    currentStep=1;showPage('page-match-M1');
-  };
-  document.head.appendChild(s);
+  currentStep=1;
+  showPage('page-match-M1');
 }
 
 
@@ -823,24 +793,44 @@ function doSubmit(){
   const btn=document.getElementById('sub-btn');
   btn.textContent='Submitting...';btn.disabled=true;
 
-  // Use XMLHttpRequest to avoid CORS no-cors issues with fetch
-  const params=new URLSearchParams();
-  params.append('email',userEmail);
-  params.append('tab',SHEET_TAB);
-  params.append('k',_k);
-  MATCH_KEYS.forEach(m=>params.append(m,picks[m]||''));
+  // Validate all picks filled
+  const missing=MATCH_KEYS.filter(m=>!picks[m]);
+  if(missing.length>0){
+    alert('Please complete all predictions before submitting.');
+    btn.textContent='🏆 Submit Predictions';btn.disabled=false;
+    return;
+  }
 
-  const xhr=new XMLHttpRequest();
-  xhr.open('POST',SCRIPT_URL,true);
-  xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-  xhr.onreadystatechange=function(){
-    if(xhr.readyState===4){
-      markDone();
-      showPage('page-success');
-    }
+  // Build GET URL with all params — Apps Script GET is CORS-safe via JSONP
+  const p=new URLSearchParams();
+  p.set('submit','1');
+  p.set('email',userEmail);
+  p.set('tab',SHEET_TAB);
+  p.set('k',_k);
+  MATCH_KEYS.forEach(m=>p.set(m,picks[m]||''));
+
+  window._submitCallback=function(data){
+    const old=document.getElementById('_jsonp_submit');if(old)old.remove();
+    markDone();
+    showPage('page-success');
   };
-  xhr.onerror=function(){markDone();showPage('page-success');};
-  xhr.send(params.toString());
+
+  // Timeout fallback — still show success after 8s even if no response
+  const t=setTimeout(function(){
+    const old=document.getElementById('_jsonp_submit');if(old)old.remove();
+    markDone();
+    showPage('page-success');
+  },8000);
+
+  const s=document.createElement('script');
+  s.id='_jsonp_submit';
+  s.src=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
+  s.onerror=function(){
+    clearTimeout(t);
+    const old=document.getElementById('_jsonp_submit');if(old)old.remove();
+    markDone();showPage('page-success');
+  };
+  document.head.appendChild(s);
 }
 
 function markDone(){

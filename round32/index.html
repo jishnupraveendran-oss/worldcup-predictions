@@ -109,11 +109,13 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 .td-teams{color:#718096;font-size:12px}
 .picked-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(246,201,14,.15);border:1px solid rgba(246,201,14,.3);color:#f6c90e;font-weight:800;font-size:13px}
 
+.b-match{position:relative;}
+.b-edit-wrap{position:absolute;top:2px;right:2px;}
 .edit-match-btn{
-  background:rgba(255,215,0,0.15);border:1px solid #ffd700;color:#ffd700;
-  border-radius:6px;font-size:10px;padding:3px 8px;cursor:pointer;
-  margin-left:5px;vertical-align:middle;line-height:1.6;display:inline-block;
-  min-width:54px;text-align:center;font-weight:600;
+  background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.4);
+  color:#ffd700;border-radius:50%;width:22px;height:22px;font-size:12px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  padding:0;line-height:1;transition:background 0.15s;
 }
 .edit-match-btn:hover,.edit-match-btn:active{background:#ffd700;color:#000;}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -625,27 +627,23 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
     <div class="card">
       <div style="text-align:center;padding:10px 0 18px">
         <div style="font-size:52px">🏆</div>
-        <h2 style="margin:10px 0 6px">Thanks for Your Prediction!</h2>
+        <h2 style="margin:10px 0 6px">Prediction Already Received!</h2>
         <p style="color:#a0aec0;font-size:14px;margin:0">Submitted as <strong id="already-email" style="color:#f6c90e"></strong></p>
       </div>
+
       <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:14px;padding:18px 20px;margin:0 0 22px;color:#fff;text-align:center">
-        <div style="font-size:22px;margin-bottom:6px">⏳</div>
-        <p style="font-weight:700;margin:0 0 4px;font-size:15px">Sit back and enjoy the matches!</p>
+        <div style="font-size:22px;margin-bottom:6px">🔒</div>
+        <p style="font-weight:700;margin:0 0 4px;font-size:15px">Your entry is locked in — only one submission allowed.</p>
         <p style="font-size:13px;color:#a0aec0;margin:0">Results announced on <strong style="color:#f6c90e">July 4, 11:00 AM</strong></p>
       </div>
 
-      <!-- BRACKET FIRST -->
-      <div class="bracket-title-bar">📊 Your Round of 32 → Round of 16 Journey</div>
+      <!-- Your Journey Bracket -->
+      <div class="bracket-title-bar">⚽ Your Round of 32 → Round of 16 Journey</div>
       <div class="bracket-graphic"><div class="bracket-grid" id="alreadyBracketGrid"></div></div>
 
-      <!-- PICKS TABLE BELOW -->
-      <div class="bracket-title-bar" style="margin-top:4px">📋 Match-wise Predictions &nbsp;<span id="picks-count" style="background:rgba(246,201,14,.15);border:1px solid rgba(246,201,14,.3);color:#f6c90e;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700"></span></div>
-      <table class="picks-table">
-        <thead><tr>
-          <th>MATCH</th><th>TEAMS</th><th>YOUR PICK</th>
-        </tr></thead>
-        <tbody id="already-picks-body"></tbody>
-      </table>
+      <!-- Match picks list -->
+      <div class="bracket-title-bar" style="margin-top:16px">📋 Your Match Predictions</div>
+      <div id="already-picks-list" style="margin-top:8px"></div>
 
       <p style="font-size:11px;color:#6b7f94;margin-top:18px;text-align:center">✅ One submission per participant — yours is locked in.<br/>Ooredoo Fintech · World Cup Mania 2026</p>
     </div>
@@ -653,7 +651,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5ueTP4f8p7lStFo7bJF4RFmCHP_gdytuFa0TnSxSQ7-Y_O3jDKGroAqUOA6hTuTXreA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzraDVWzbLiHklDtuDzHtbuIoXlHBglI6_kt6KY8IyQSpNQ2AwD-wEPeszpD32UD1dZzg/exec';
 const MATCH_KEYS = ["M1","M2","M3","M4","M5","M6","M7","M8","M9","M10","M11","M12","M13","M14","M15","M16"];
 const SHEET_TAB  = 'R32_Responses';
 const _k = (s=>Array.from(s).map((c,i)=>String.fromCharCode(c.charCodeAt(0)^(i%7+3))).join(''))(atob('ZjQxPzFqazVmMjBia2xgZjFnYTxsYDBkZDAwOmU2NWU/bWxgNDQ+MTE9YTdhNGQ8'));
@@ -767,14 +765,47 @@ function buildReview(){
   if(el) el.innerHTML='';
 }
 
+function showAlreadyPage(email, savedPicks){
+  document.getElementById('already-email').textContent = email;
+
+  // Render bracket journey
+  renderBracketIn('alreadyBracketGrid', savedPicks, false);
+
+  // Render match picks list
+  const list = document.getElementById('already-picks-list');
+  if(list){
+    let html2='';
+    MATCH_KEYS.forEach(function(m){
+      const meta = MATCH_META[m];
+      const winner = savedPicks[m] || '—';
+      const isT1 = winner === meta.teams[0];
+      const isT2 = winner === meta.teams[1];
+      html2 += '<div style="display:flex;justify-content:space-between;align-items:center;'+
+        'padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px">'+
+        '<span style="color:#a0aec0;min-width:52px">Match '+m.replace('M','')+'</span>'+
+        '<span style="flex:1;padding:0 8px">'+
+          '<span style="'+(isT1?'color:#f6c90e;font-weight:700':'color:#6b7f94')+'">'+meta.teams[0]+'</span>'+
+          ' <span style="color:#4a5568">vs</span> '+
+          '<span style="'+(isT2?'color:#f6c90e;font-weight:700':'color:#6b7f94')+'">'+meta.teams[1]+'</span>'+
+        '</span>'+
+        '<span style="color:#f6c90e;font-weight:700;min-width:32px;text-align:right">'+winner+'</span>'+
+      '</div>';
+    });
+    list.innerHTML = '<div style="border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden">'+html2+'</div>';
+  }
+  showPage('page-already');
+}
+
+
 function renderBracketIn(targetId, p, editable){
   const bg=document.getElementById(targetId);if(!bg)return;
   const left=MATCH_KEYS.slice(0,8),right=MATCH_KEYS.slice(8);
   const makeCol=keys=>keys.map(mid=>{
     const [t1,t2]=MATCH_META[mid].teams;const w=p[mid];
-    const editBtn=editable?'<button class="edit-match-btn" onclick="editMatch(&quot;'+mid+'&quot;)">✏️ Edit</button>':'';
+    const editBtn=editable?'<button class="edit-match-btn" onclick="editMatch(&quot;'+mid+'&quot;)" title="Edit">✏️</button>':'';
     return '<div class="b-match">'+
-      '<div class="b-mid">'+mid+editBtn+'</div>'+
+      '<div class="b-mid">Match '+mid.replace('M','')+'</div>'+
+      (editable?'<div class="b-edit-wrap">'+editBtn+'</div>':'')+
       '<div class="b-team '+(w===t1?'winner':'')+'">'+t1+(w===t1?' ✓':'')+'</div>'+
       '<div class="b-team '+(w===t2?'winner':'')+'">'+t2+(w===t2?' ✓':'')+'</div>'+
     '</div>';
@@ -811,8 +842,13 @@ function doSubmit(){
 
   window._submitCallback=function(data){
     const old=document.getElementById('_jsonp_submit');if(old)old.remove();
-    markDone();
-    showPage('page-success');
+    if(data && data.msg === 'already_submitted'){
+      // Backend says duplicate — show their saved journey
+      showAlreadyPage(userEmail, picks);
+    } else {
+      markDone();
+      showPage('page-success');
+    }
   };
 
   // Timeout fallback — still show success after 8s even if no response

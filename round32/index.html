@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -715,6 +716,8 @@ function goEmail(){
     return;
   }
   userEmail=document.getElementById('email-input').value.trim();
+
+  // 1. Check localStorage first (instant, same device)
   try{
     const done=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     const saved=done[userEmail.toLowerCase()];
@@ -723,9 +726,55 @@ function goEmail(){
       return;
     }
   }catch(e){}
-  dbg('✅ Email OK: '+userEmail+' | localStorage: '+localStorage.getItem(STORAGE_KEY));
-  currentStep=1;
-  showPage('page-match-M1');
+
+  // 2. Check backend (catches different device / cleared cache)
+  const btn=document.getElementById('email-btn');
+  btn.textContent='Checking...';btn.disabled=true;
+
+  let responded=false;
+
+  // Timeout fallback — proceed to Match 1 if backend doesn't reply in 4s
+  const timer=setTimeout(function(){
+    if(responded)return;
+    responded=true;
+    const old=document.getElementById('_jsonp_emailcheck');if(old)old.remove();
+    btn.textContent='Start Predicting →';btn.disabled=false;
+    dbg('⚠️ Email check timed out — proceeding anyway');
+    currentStep=1;showPage('page-match-M1');
+  },4000);
+
+  window._emailCheckCallback=function(data){
+    if(responded)return;
+    responded=true;
+    clearTimeout(timer);
+    const old=document.getElementById('_jsonp_emailcheck');if(old)old.remove();
+    btn.textContent='Start Predicting →';btn.disabled=false;
+    dbg('📥 Email check: '+JSON.stringify(data));
+    if(data && data.already){
+      // Save to localStorage so next visit is instant
+      try{
+        const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+        d[userEmail.toLowerCase()]=data.picks||{};
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
+      }catch(e){}
+      showAlreadyPage(userEmail, data.picks||{});
+    }else{
+      currentStep=1;showPage('page-match-M1');
+    }
+  };
+
+  const s=document.createElement('script');
+  s.id='_jsonp_emailcheck';
+  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&callback=_emailCheckCallback&email='+encodeURIComponent(userEmail);
+  s.onerror=function(){
+    if(responded)return;
+    responded=true;
+    clearTimeout(timer);
+    const old=document.getElementById('_jsonp_emailcheck');if(old)old.remove();
+    btn.textContent='Start Predicting →';btn.disabled=false;
+    currentStep=1;showPage('page-match-M1');
+  };
+  document.head.appendChild(s);
 }
 
 

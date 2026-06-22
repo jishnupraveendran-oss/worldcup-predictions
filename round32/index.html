@@ -717,60 +717,54 @@ function goEmail(){
   }
   userEmail=document.getElementById('email-input').value.trim();
 
-  // 1. Check localStorage first (instant, same device)
+  // STEP 1: localStorage instant check (same device)
   try{
-    const done=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-    const saved=done[userEmail.toLowerCase()];
+    const cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    const saved=cached[userEmail.toLowerCase()];
     if(saved && typeof saved==='object' && Object.keys(saved).length>0){
-      showAlreadyPage(userEmail, saved);
+      showAlreadyPage(userEmail,saved);
       return;
     }
   }catch(e){}
 
-  // 2. Check backend (catches different device / cleared cache)
+  // STEP 2: Backend check — blocks entry until confirmed new
   const btn=document.getElementById('email-btn');
-  btn.textContent='Checking...';btn.disabled=true;
+  btn.textContent='Checking…';btn.disabled=true;
 
-  let responded=false;
+  let done=false;
 
-  // Timeout fallback — proceed to Match 1 if backend doesn't reply in 4s
   const timer=setTimeout(function(){
-    if(responded)return;
-    responded=true;
-    const old=document.getElementById('_jsonp_emailcheck');if(old)old.remove();
+    if(done)return; done=true;
+    const old=document.getElementById('_ec');if(old)old.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
-    dbg('⚠️ Email check timed out — proceeding anyway');
     currentStep=1;showPage('page-match-M1');
-  },4000);
+  },5000);
 
-  window._emailCheckCallback=function(data){
-    if(responded)return;
-    responded=true;
+  window._ec=function(data){
+    if(done)return; done=true;
     clearTimeout(timer);
-    const old=document.getElementById('_jsonp_emailcheck');if(old)old.remove();
+    const old=document.getElementById('_ec');if(old)old.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
-    dbg('📥 Email check: '+JSON.stringify(data));
-    if(data && data.already){
-      // Save to localStorage so next visit is instant
+    if(data&&data.already===true){
       try{
         const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
         d[userEmail.toLowerCase()]=data.picks||{};
         localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
       }catch(e){}
-      showAlreadyPage(userEmail, data.picks||{});
+      showAlreadyPage(userEmail,data.picks||{});
     }else{
       currentStep=1;showPage('page-match-M1');
     }
   };
 
   const s=document.createElement('script');
-  s.id='_jsonp_emailcheck';
-  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&callback=_emailCheckCallback&email='+encodeURIComponent(userEmail);
+  s.id='_ec';
+  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)
+       +'&email='+encodeURIComponent(userEmail)+'&callback=_ec';
   s.onerror=function(){
-    if(responded)return;
-    responded=true;
+    if(done)return; done=true;
     clearTimeout(timer);
-    const old=document.getElementById('_jsonp_emailcheck');if(old)old.remove();
+    const old=document.getElementById('_ec');if(old)old.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
     currentStep=1;showPage('page-match-M1');
   };

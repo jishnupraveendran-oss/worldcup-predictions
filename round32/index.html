@@ -672,6 +672,19 @@ let userEmail='',currentStep=0;
 const picks={};
 const STORAGE_KEY='r32_done_v2';
 
+function dbg(msg){
+  if(new URLSearchParams(window.location.search).get('debug')!=='1')return;
+  const panel=document.getElementById('debug-panel');
+  const log=document.getElementById('debug-log');
+  if(panel&&log){
+    panel.style.display='block';
+    log.innerHTML+='<div style="border-bottom:1px solid #1a2a3a;padding:3px 0">'+
+      new Date().toLocaleTimeString()+' — '+msg+'</div>';
+    log.scrollTop=log.scrollHeight;
+  }
+  console.log('[R32]',msg);
+}
+
 function showPage(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById(id);
@@ -710,6 +723,7 @@ function goEmail(){
       return;
     }
   }catch(e){}
+  dbg('✅ Email OK: '+userEmail+' | localStorage: '+localStorage.getItem(STORAGE_KEY));
   currentStep=1;
   showPage('page-match-M1');
 }
@@ -818,6 +832,7 @@ function doSubmit(){
   MATCH_KEYS.forEach(m=>p.set(m,picks[m]||''));
 
   window._submitCallback=function(data){
+    dbg('📥 Response: '+JSON.stringify(data));
     clearTimeout(t);
     const old=document.getElementById('_jsonp_submit');if(old)old.remove();
     btn.disabled=false;
@@ -853,7 +868,9 @@ function doSubmit(){
 
   const s=document.createElement('script');
   s.id='_jsonp_submit';
-  s.src=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
+  const fullUrl=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
+  dbg('📤 Calling: '+fullUrl.substring(0,120)+'...');
+  s.src=fullUrl;
   s.onerror=function(){
     clearTimeout(t);
     const old=document.getElementById('_jsonp_submit');if(old)old.remove();
@@ -878,6 +895,12 @@ function markDone(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // ?reset=1 in URL clears localStorage (for testing/admin)
+  if(new URLSearchParams(window.location.search).get('reset')==='1'){
+    localStorage.removeItem(STORAGE_KEY);
+    console.log('localStorage cleared');
+  }
+
   const inp=document.getElementById('email-input');
   if(inp){
     inp.addEventListener('keydown',e=>{if(e.key==='Enter')goEmail();});
@@ -885,5 +908,17 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 </script>
+
+<!-- DEBUG PANEL — remove before production or keep hidden -->
+<div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#0a0a1a;border-top:2px solid #f6c90e;padding:10px 14px;font-size:11px;
+  color:#a0aec0;font-family:monospace;z-index:9999;max-height:180px;overflow-y:auto">
+  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+    <strong style="color:#f6c90e">🛠 Debug Panel</strong>
+    <button onclick="document.getElementById('debug-panel').style.display='none'"
+      style="background:none;border:1px solid #444;color:#fff;padding:1px 8px;cursor:pointer;border-radius:4px">✕</button>
+  </div>
+  <div id="debug-log"></div>
+</div>
 </body>
 </html>

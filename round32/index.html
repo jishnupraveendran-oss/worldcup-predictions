@@ -604,6 +604,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="bracket-graphic"><div class="bracket-grid" id="bracketGrid"></div></div>
     </div>
         <div class="nav" style="margin-top:18px">
+      <div id="submit-err" style="display:none;color:#ff4444;font-size:13px;font-weight:700;background:rgba(255,68,68,0.1);padding:10px 14px;border-radius:8px;border-left:3px solid #ff4444;margin-bottom:12px;text-align:left"></div>
       <button class="btn pri" id="sub-btn" onclick="doSubmit()">🏆 Submit Predictions</button>
     </div>
   </div></div>
@@ -649,7 +650,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzraDVWzbLiHklDtuDzHtbuIoXlHBglI6_kt6KY8IyQSpNQ2AwD-wEPeszpD32UD1dZzg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQgGx0Qfmr1IJAQh3n8SU2uePX68k54Vf9gOn0ET0b_iUi4UnUZTybOiJBgwniV35GJw/exec';
 const MATCH_KEYS = ["M1","M2","M3","M4","M5","M6","M7","M8","M9","M10","M11","M12","M13","M14","M15","M16"];
 const SHEET_TAB  = 'R32_Responses';
 const _k = (s=>Array.from(s).map((c,i)=>String.fromCharCode(c.charCodeAt(0)^(i%7+3))).join(''))(atob('ZjQxPzFqazVmMjBia2xgZjFnYTxsYDBkZDAwOmU2NWU/bWxgNDQ+MTE9YTdhNGQ8'));
@@ -817,22 +818,38 @@ function doSubmit(){
   MATCH_KEYS.forEach(m=>p.set(m,picks[m]||''));
 
   window._submitCallback=function(data){
+    clearTimeout(t);
     const old=document.getElementById('_jsonp_submit');if(old)old.remove();
-    if(data && data.msg === 'already_submitted'){
-      // Backend says duplicate — show their saved journey
-      showAlreadyPage(userEmail, picks);
-    } else {
+    btn.disabled=false;
+    if(data && data.msg === 'saved'){
+      // ✅ Backend confirmed save
       markDone();
       showPage('page-success');
+    } else if(data && data.msg === 'already_submitted'){
+      // Duplicate — show their journey
+      showAlreadyPage(userEmail, picks);
+    } else {
+      // Backend returned unexpected response — show error
+      btn.textContent='🏆 Submit Predictions';
+      const errBox=document.getElementById('submit-err');
+      if(errBox){
+        errBox.textContent='⚠️ Submission failed: '+(data&&data.msg?data.msg:'no response')+'. Please try again or contact admin.';
+        errBox.style.display='block';
+      }
     }
   };
 
-  // Timeout fallback — still show success after 8s even if no response
+  // Timeout — do NOT auto-succeed; show error instead
   const t=setTimeout(function(){
     const old=document.getElementById('_jsonp_submit');if(old)old.remove();
-    markDone();
-    showPage('page-success');
-  },8000);
+    btn.disabled=false;
+    btn.textContent='🏆 Submit Predictions';
+    const errBox=document.getElementById('submit-err');
+    if(errBox){
+      errBox.textContent='⚠️ Request timed out. Check your connection and try again.';
+      errBox.style.display='block';
+    }
+  },10000);
 
   const s=document.createElement('script');
   s.id='_jsonp_submit';
@@ -840,7 +857,13 @@ function doSubmit(){
   s.onerror=function(){
     clearTimeout(t);
     const old=document.getElementById('_jsonp_submit');if(old)old.remove();
-    markDone();showPage('page-success');
+    btn.disabled=false;
+    btn.textContent='🏆 Submit Predictions';
+    const errBox=document.getElementById('submit-err');
+    if(errBox){
+      errBox.textContent='⚠️ Could not reach server. Please check your internet and try again.';
+      errBox.style.display='block';
+    }
   };
   document.head.appendChild(s);
 }

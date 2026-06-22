@@ -641,9 +641,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="bracket-title-bar">⚽ Your Round of 32 → Round of 16 Journey</div>
       <div class="bracket-graphic"><div class="bracket-grid" id="alreadyBracketGrid"></div></div>
 
-      <!-- Match picks list -->
-      <div class="bracket-title-bar" style="margin-top:16px">📋 Your Match Predictions</div>
-      <div id="already-picks-list" style="margin-top:8px"></div>
+
 
       <p style="font-size:11px;color:#6b7f94;margin-top:18px;text-align:center">✅ One submission per participant — yours is locked in.<br/>Ooredoo Fintech · World Cup Mania 2026</p>
     </div>
@@ -771,28 +769,6 @@ function showAlreadyPage(email, savedPicks){
   // Render bracket journey
   renderBracketIn('alreadyBracketGrid', savedPicks, false);
 
-  // Render match picks list
-  const list = document.getElementById('already-picks-list');
-  if(list){
-    let html2='';
-    MATCH_KEYS.forEach(function(m){
-      const meta = MATCH_META[m];
-      const winner = savedPicks[m] || '—';
-      const isT1 = winner === meta.teams[0];
-      const isT2 = winner === meta.teams[1];
-      html2 += '<div style="display:flex;justify-content:space-between;align-items:center;'+
-        'padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px">'+
-        '<span style="color:#a0aec0;min-width:52px">Match '+m.replace('M','')+'</span>'+
-        '<span style="flex:1;padding:0 8px">'+
-          '<span style="'+(isT1?'color:#f6c90e;font-weight:700':'color:#6b7f94')+'">'+meta.teams[0]+'</span>'+
-          ' <span style="color:#4a5568">vs</span> '+
-          '<span style="'+(isT2?'color:#f6c90e;font-weight:700':'color:#6b7f94')+'">'+meta.teams[1]+'</span>'+
-        '</span>'+
-        '<span style="color:#f6c90e;font-weight:700;min-width:32px;text-align:right">'+winner+'</span>'+
-      '</div>';
-    });
-    list.innerHTML = '<div style="border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden">'+html2+'</div>';
-  }
   showPage('page-already');
 }
 

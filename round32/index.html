@@ -150,14 +150,12 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="card-title">Enter Your Details</div>
       <div class="card-sub">Enter your full name and company email to get started.</div>
       <div class="inp-wrap" style="margin-bottom:12px">
-        <input type="text" id="name-input" placeholder="Full Name (e.g. Jishnu Raveendran)"
-          autocomplete="name" oninput="validateName()"
-          onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
+        <input type="text" id="name-input" placeholder="Full Name (e.g. Jishnu Raveendran)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
         <span class="inp-ico">&#128100;</span>
       </div>
       <div id="name-err" class="err" style="display:none">&#9888; Please enter your full name (first and last name).</div>
       <div class="inp-wrap">
-        <input type="email" id="email-input" placeholder="abb.cc@ofti.app" autocomplete="email" oninput="validateEmail()" onkeydown="if(event.key==='Enter')goEmail()"/>
+        <input type="email" id="email-input" placeholder="abc_cc@ofti.app" autocomplete="email" oninput="validateEmail()" onkeydown="if(event.key==='Enter')goEmail()"/>
         <span class="inp-ico">&#9993;</span>
       </div>
       <div class="hint">&#128274; Only @ofti.app email addresses are allowed.</div>
@@ -743,26 +741,21 @@ function validateEmail(){
 function goEmail(){
   if(!validateName()){
     var btn=document.getElementById('email-btn');
-    btn.classList.add('shake');
-    setTimeout(function(){btn.classList.remove('shake');},600);
-    document.getElementById('name-input').focus();
-    return;
+    btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},600);
+    document.getElementById('name-input').focus();return;
   }
   if(!validateEmail()){
     var btn=document.getElementById('email-btn');
-    btn.classList.add('shake');
-    setTimeout(function(){btn.classList.remove('shake');},600);
-    document.getElementById('email-input').focus();
-    return;
+    btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},600);
+    document.getElementById('email-input').focus();return;
   }
   userEmail=document.getElementById('email-input').value.trim();
   userName=document.getElementById('name-input').value.trim();
+  dbg('Name: '+userName+' | Email: '+userEmail);
   try{
     var cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     var saved=cached[userEmail.toLowerCase()];
-    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){
-      showAlreadyPage(userEmail,saved);return;
-    }
+    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){showAlreadyPage(userEmail,saved);return;}
   }catch(e){}
   var btn=document.getElementById('email-btn');
   btn.textContent='Checking...';btn.disabled=true;
@@ -774,8 +767,7 @@ function goEmail(){
     currentStep=1;showPage('page-match-M1');
   },5000);
   window._ec=function(data){
-    if(checked)return;checked=true;
-    clearTimeout(fallback);
+    if(checked)return;checked=true;clearTimeout(fallback);
     var s=document.getElementById('_ec');if(s)s.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
     if(data&&data.already===true){
@@ -976,7 +968,6 @@ const LEADERBOARD_DATA=[
   {name:'Bayan Jabir',points:12},
   {name:'Rawan Al-Dosari',points:12}
 ];
-
 function _buildLB(data,showAll){
   var sorted=data.slice().sort(function(a,b){return b.points-a.points||a.name.localeCompare(b.name);});
   var rank=0,prev=null;
@@ -984,119 +975,98 @@ function _buildLB(data,showAll){
   var visible=showAll?sorted:sorted.slice(0,10);
   var medals={1:'&#129351;',2:'&#129352;',3:'&#129353;'};
   var rows='';
-  visible.forEach(function(r,i){
-    rows+='<tr class="'+(i%2?'lb-alt':'')+'">'
-      +'<td class="lb-rank">'+(medals[r._rank]||r._rank)+'</td>'
-      +'<td class="lb-name">'+r.name+'</td>'
-      +'<td class="lb-pts">'+r.points+' pts</td>'
-      +'</tr>';
-  });
-  var btn='';
-  if(sorted.length>10){
-    if(!showAll){
-      btn='<button class="lb-toggle-btn" onclick="_expandLB(this)">View More &#9660;</button>';
-    } else {
-      btn='<button class="lb-toggle-btn" onclick="_collapseLB(this)">Minimize &#9650;</button>';
-    }
-  }
-  return '<div class="lb-outer"><table class="lb-table"><thead><tr>'
-    +'<th>Rank</th><th>Name</th><th style="text-align:right">Points</th>'
-    +'</tr></thead><tbody>'+rows+'</tbody></table>'+btn+'</div>';
+  visible.forEach(function(r,i){rows+='<tr class="'+(i%2?'lb-alt':'')+'"><td class="lb-rank">'+(medals[r._rank]||r._rank)+'</td><td class="lb-name">'+r.name+'</td><td class="lb-pts">'+r.points+' pts</td></tr>';});
+  var btn=sorted.length>10?(showAll?'<button class="lb-toggle-btn" onclick="_collapseLB(this)">Minimize &#9650;</button>':'<button class="lb-toggle-btn" onclick="_expandLB(this)">View More &#9660;</button>'):'';
+  return '<div class="lb-outer"><table class="lb-table"><thead><tr><th>Rank</th><th>Name</th><th style="text-align:right">Points</th></tr></thead><tbody>'+rows+'</tbody></table>'+btn+'</div>';
 }
-
-function _expandLB(btn){
-  var outer=btn.closest('.lb-outer');
-  if(outer) outer.outerHTML=_buildLB(LEADERBOARD_DATA,true);
-}
-
-function _collapseLB(btn){
-  var outer=btn.closest('.lb-outer');
-  if(outer) outer.outerHTML=_buildLB(LEADERBOARD_DATA,false);
-}
-
+function _expandLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB(LEADERBOARD_DATA,true);}
+function _collapseLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB(LEADERBOARD_DATA,false);}
 function renderLeaderboard(targetId){
   var el=document.getElementById(targetId);if(!el)return;
-  if(!LEADERBOARD_DATA.length){
-    el.innerHTML='<p style="color:#a0aec0;font-size:13px;padding:12px 0;text-align:center">Leaderboard available after results on July 4.</p>';
-    return;
-  }
-  el.innerHTML=_buildLB(LEADERBOARD_DATA,false);
+  el.innerHTML=LEADERBOARD_DATA.length?_buildLB(LEADERBOARD_DATA,false):'<p style="color:#a0aec0;font-size:13px;padding:12px 0;text-align:center">Leaderboard available after results on July 4.</p>';
 }
 function doSubmit(){
   const btn=document.getElementById('sub-btn');
   btn.textContent='Submitting...';btn.disabled=true;
 
-  // Validate all picks filled
   const missing=MATCH_KEYS.filter(m=>!picks[m]);
   if(missing.length>0){
     alert('Please complete all predictions before submitting.');
-    btn.textContent='🏆 Submit Predictions';btn.disabled=false;
+    btn.textContent='Submit Predictions';btn.disabled=false;
     return;
   }
 
-  // Build GET URL with all params — Apps Script GET is CORS-safe via JSONP
   const p=new URLSearchParams();
   p.set('submit','1');
   p.set('email',userEmail);
-  p.set('name',userName);
+  p.set('name',userName||'');
   p.set('tab',SHEET_TAB);
   p.set('k',_k);
   MATCH_KEYS.forEach(m=>p.set(m,picks[m]||''));
 
-  window._submitCallback=function(data){
-    dbg('📥 Response: '+JSON.stringify(data));
-    clearTimeout(t);
-    const old=document.getElementById('_jsonp_submit');if(old)old.remove();
-    btn.disabled=false;
-    if(data && data.msg === 'saved'){
-      // ✅ Backend confirmed save
-      markDone();
-      renderLeaderboard('lb-success');
-      showPage('page-success');
-    } else if(data && data.msg === 'already_submitted'){
-      // Duplicate — show their journey
-      showAlreadyPage(userEmail, picks);
-    } else {
-      // Backend returned unexpected response — show error
-      btn.textContent='🏆 Submit Predictions';
-      const errBox=document.getElementById('submit-err');
-      if(errBox){
-        errBox.textContent='⚠️ Submission failed: '+(data&&data.msg?data.msg:'no response')+'. Please try again or contact admin.';
-        errBox.style.display='block';
+  const errBox=document.getElementById('submit-err');
+  if(errBox){errBox.style.display='none';errBox.textContent='';}
+
+  var attempt=0;
+  var maxAttempts=3;
+
+  function trySubmit(){
+    attempt++;
+    if(attempt>1){btn.textContent='Retrying ('+attempt+'/'+maxAttempts+')...';}
+
+    var done=false;
+    var scriptEl=document.createElement('script');
+    scriptEl.id='_jsonp_submit';
+
+    var timer=setTimeout(function(){
+      if(done)return;done=true;
+      var old=document.getElementById('_jsonp_submit');if(old)old.remove();
+      if(attempt<maxAttempts){trySubmit();}
+      else{
+        btn.disabled=false;btn.textContent='Submit Predictions';
+        if(errBox){errBox.innerHTML='&#9888; Timed out after '+maxAttempts+' attempts. Please try again.';errBox.style.display='block';}
       }
-    }
-  };
+    },25000);
 
-  // Timeout — do NOT auto-succeed; show error instead
-  const t=setTimeout(function(){
-    const old=document.getElementById('_jsonp_submit');if(old)old.remove();
-    btn.disabled=false;
-    btn.textContent='🏆 Submit Predictions';
-    const errBox=document.getElementById('submit-err');
-    if(errBox){
-      errBox.textContent='⚠️ Request timed out. Check your connection and try again.';
-      errBox.style.display='block';
-    }
-  },10000);
+    window._submitCallback=function(data){
+      if(done)return;done=true;
+      clearTimeout(timer);
+      var old=document.getElementById('_jsonp_submit');if(old)old.remove();
+      btn.disabled=false;
+      dbg('Response: '+JSON.stringify(data));
+      if(data&&data.msg==='saved'){
+        markDone();
+        renderLeaderboard('lb-success');
+        renderLeaderboard('lb-success');
+      showPage('page-success');
+      }else if(data&&data.msg==='already_submitted'){
+        showAlreadyPage(userEmail,picks);
+      }else{
+        btn.textContent='Submit Predictions';
+        if(errBox){errBox.textContent='&#9888; '+(data&&data.msg?data.msg:'Unexpected error')+'. Please try again.';errBox.style.display='block';}
+      }
+    };
 
-  const s=document.createElement('script');
-  s.id='_jsonp_submit';
-  const fullUrl=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
-  dbg('📤 Calling: '+fullUrl.substring(0,120)+'...');
-  s.src=fullUrl;
-  s.onerror=function(){
-    clearTimeout(t);
-    const old=document.getElementById('_jsonp_submit');if(old)old.remove();
-    btn.disabled=false;
-    btn.textContent='🏆 Submit Predictions';
-    const errBox=document.getElementById('submit-err');
-    if(errBox){
-      errBox.textContent='⚠️ Could not reach server. Please check your internet and try again.';
-      errBox.style.display='block';
-    }
-  };
-  document.head.appendChild(s);
+    scriptEl.onerror=function(){
+      if(done)return;done=true;
+      clearTimeout(timer);
+      var old=document.getElementById('_jsonp_submit');if(old)old.remove();
+      if(attempt<maxAttempts){trySubmit();}
+      else{
+        btn.disabled=false;btn.textContent='Submit Predictions';
+        if(errBox){errBox.textContent='&#9888; Could not reach server. Check your internet and try again.';errBox.style.display='block';}
+      }
+    };
+
+    var fullUrl=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
+    dbg('Attempt '+attempt+': '+fullUrl.substring(0,100)+'...');
+    scriptEl.src=fullUrl;
+    document.head.appendChild(scriptEl);
+  }
+
+  trySubmit();
 }
+
 
 function markDone(){
   try{

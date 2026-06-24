@@ -690,7 +690,7 @@ const MATCH_META = {
 const R16_PAIRS=[['M1','M2'],['M3','M4'],['M5','M6'],['M7','M8'],
                  ['M9','M10'],['M11','M12'],['M13','M14'],['M15','M16']];
 
-let userEmail='',userName='',currentStep=0;
+window.userEmail='';window.userName='';window.currentStep=0;
 const picks={};
 const STORAGE_KEY='r32_done_v2';
 
@@ -722,7 +722,6 @@ function validateName(){
   err.style.display=(!ok&&val.length>0)?'block':'none';
   return ok;
 }
-
 function validateEmail(){
   const val=document.getElementById('email-input').value.trim();
   const inp=document.getElementById('email-input');
@@ -749,13 +748,15 @@ function goEmail(){
     btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},600);
     document.getElementById('email-input').focus();return;
   }
-  userEmail=document.getElementById('email-input').value.trim();
-  userName=document.getElementById('name-input').value.trim();
-  dbg('Name: '+userName+' | Email: '+userEmail);
+  window.userEmail = document.getElementById('email-input').value.trim();
+  window.userName  = document.getElementById('name-input').value.trim();
+  sessionStorage.setItem('r32_name',  window.userName);
+  sessionStorage.setItem('r32_email', window.userEmail);
+  dbg('Name='+window.userName+' Email='+window.userEmail);
   try{
     var cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-    var saved=cached[userEmail.toLowerCase()];
-    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){showAlreadyPage(userEmail,saved);return;}
+    var saved=cached[window.userEmail.toLowerCase()];
+    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){showAlreadyPage(window.userEmail,saved);return;}
   }catch(e){}
   var btn=document.getElementById('email-btn');
   btn.textContent='Checking...';btn.disabled=true;
@@ -764,20 +765,20 @@ function goEmail(){
     if(checked)return;checked=true;
     var s=document.getElementById('_ec');if(s)s.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
-    currentStep=1;showPage('page-match-M1');
+    window.currentStep=1;showPage('page-match-M1');
   },5000);
   window._ec=function(data){
     if(checked)return;checked=true;clearTimeout(fallback);
     var s=document.getElementById('_ec');if(s)s.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
     if(data&&data.already===true){
-      try{var d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');d[userEmail.toLowerCase()]=data.picks||{};localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}
-      showAlreadyPage(userEmail,data.picks||{});
-    }else{currentStep=1;showPage('page-match-M1');}
+      try{var d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');d[window.userEmail.toLowerCase()]=data.picks||{};localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}
+      showAlreadyPage(window.userEmail,data.picks||{});
+    }else{window.currentStep=1;showPage('page-match-M1');}
   };
   var s=document.createElement('script');s.id='_ec';
-  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&email='+encodeURIComponent(userEmail)+'&callback=_ec';
-  s.onerror=function(){if(checked)return;checked=true;clearTimeout(fallback);var o=document.getElementById('_ec');if(o)o.remove();btn.textContent='Start Predicting →';btn.disabled=false;currentStep=1;showPage('page-match-M1');};
+  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&email='+encodeURIComponent(window.userEmail)+'&callback=_ec';
+  s.onerror=function(){if(checked)return;checked=true;clearTimeout(fallback);var o=document.getElementById('_ec');if(o)o.remove();btn.textContent='Start Predicting →';btn.disabled=false;window.currentStep=1;showPage('page-match-M1');};
   document.head.appendChild(s);
 }
 
@@ -833,7 +834,7 @@ function buildReview(){
 
 function showAlreadyPage(email, savedPicks){
   document.getElementById('already-email').textContent=email;
-  var _an=document.getElementById('already-name');if(_an)_an.textContent=userName||'';
+  var _an=document.getElementById('already-name');if(_an)_an.textContent=window.userName||sessionStorage.getItem('r32_name')||'';
 
   // Render bracket journey
   renderBracketIn('alreadyBracketGrid', savedPicks, false);
@@ -981,89 +982,75 @@ function _buildLB(data,showAll){
 }
 function _expandLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB(LEADERBOARD_DATA,true);}
 function _collapseLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB(LEADERBOARD_DATA,false);}
-function renderLeaderboard(targetId){
-  var el=document.getElementById(targetId);if(!el)return;
-  el.innerHTML=LEADERBOARD_DATA.length?_buildLB(LEADERBOARD_DATA,false):'<p style="color:#a0aec0;font-size:13px;padding:12px 0;text-align:center">Leaderboard available after results on July 4.</p>';
-}
+function renderLeaderboard(targetId){var el=document.getElementById(targetId);if(!el)return;el.innerHTML=LEADERBOARD_DATA.length?_buildLB(LEADERBOARD_DATA,false):'<p style="color:#a0aec0;font-size:13px;padding:12px 0;text-align:center">Leaderboard available after results on July 4.</p>';}
 function doSubmit(){
+  // Always re-read from sessionStorage in case window var was lost
+  var submitName  = window.userName  || sessionStorage.getItem('r32_name')  || '';
+  var submitEmail = window.userEmail || sessionStorage.getItem('r32_email') || '';
+  dbg('SUBMIT name='+submitName+' email='+submitEmail);
+
   const btn=document.getElementById('sub-btn');
   btn.textContent='Submitting...';btn.disabled=true;
 
   const missing=MATCH_KEYS.filter(m=>!picks[m]);
   if(missing.length>0){
     alert('Please complete all predictions before submitting.');
-    btn.textContent='Submit Predictions';btn.disabled=false;
-    return;
+    btn.textContent='Submit Predictions';btn.disabled=false;return;
   }
 
   const p=new URLSearchParams();
   p.set('submit','1');
-  p.set('email',userEmail);
-  p.set('name',userName||'');
-  p.set('tab',SHEET_TAB);
-  p.set('k',_k);
+  p.set('email', submitEmail);
+  p.set('name',  submitName);
+  p.set('tab',   SHEET_TAB);
+  p.set('k',     _k);
   MATCH_KEYS.forEach(m=>p.set(m,picks[m]||''));
+  dbg('Params: email='+p.get('email')+' name='+p.get('name'));
 
   const errBox=document.getElementById('submit-err');
   if(errBox){errBox.style.display='none';errBox.textContent='';}
 
-  var attempt=0;
-  var maxAttempts=3;
+  var attempt=0,maxAttempts=3;
 
   function trySubmit(){
     attempt++;
     if(attempt>1){btn.textContent='Retrying ('+attempt+'/'+maxAttempts+')...';}
-
     var done=false;
-    var scriptEl=document.createElement('script');
-    scriptEl.id='_jsonp_submit';
-
+    var scriptEl=document.createElement('script');scriptEl.id='_jsonp_submit';
     var timer=setTimeout(function(){
       if(done)return;done=true;
       var old=document.getElementById('_jsonp_submit');if(old)old.remove();
       if(attempt<maxAttempts){trySubmit();}
-      else{
-        btn.disabled=false;btn.textContent='Submit Predictions';
-        if(errBox){errBox.innerHTML='&#9888; Timed out after '+maxAttempts+' attempts. Please try again.';errBox.style.display='block';}
-      }
+      else{btn.disabled=false;btn.textContent='Submit Predictions';if(errBox){errBox.innerHTML='&#9888; Timed out. Please try again.';errBox.style.display='block';}}
     },25000);
-
     window._submitCallback=function(data){
-      if(done)return;done=true;
-      clearTimeout(timer);
+      if(done)return;done=true;clearTimeout(timer);
       var old=document.getElementById('_jsonp_submit');if(old)old.remove();
-      btn.disabled=false;
-      dbg('Response: '+JSON.stringify(data));
+      btn.disabled=false;dbg('Response: '+JSON.stringify(data));
       if(data&&data.msg==='saved'){
         markDone();
+        var _sn=document.getElementById('success-name');
+        if(_sn)_sn.textContent=submitName?'Welcome, '+submitName+'!':'';
         renderLeaderboard('lb-success');
         renderLeaderboard('lb-success');
       showPage('page-success');
       }else if(data&&data.msg==='already_submitted'){
-        showAlreadyPage(userEmail,picks);
+        showAlreadyPage(submitEmail,picks);
       }else{
         btn.textContent='Submit Predictions';
         if(errBox){errBox.textContent='&#9888; '+(data&&data.msg?data.msg:'Unexpected error')+'. Please try again.';errBox.style.display='block';}
       }
     };
-
     scriptEl.onerror=function(){
-      if(done)return;done=true;
-      clearTimeout(timer);
+      if(done)return;done=true;clearTimeout(timer);
       var old=document.getElementById('_jsonp_submit');if(old)old.remove();
       if(attempt<maxAttempts){trySubmit();}
-      else{
-        btn.disabled=false;btn.textContent='Submit Predictions';
-        if(errBox){errBox.textContent='&#9888; Could not reach server. Check your internet and try again.';errBox.style.display='block';}
-      }
+      else{btn.disabled=false;btn.textContent='Submit Predictions';if(errBox){errBox.textContent='&#9888; Could not reach server. Try again.';errBox.style.display='block';}}
     };
-
     var fullUrl=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
-    dbg('Attempt '+attempt+': '+fullUrl.substring(0,100)+'...');
-    scriptEl.src=fullUrl;
-    document.head.appendChild(scriptEl);
+    dbg('Attempt '+attempt+' URL: '+fullUrl.substring(0,120));
+    scriptEl.src=fullUrl;document.head.appendChild(scriptEl);
   }
-
   trySubmit();
 }
 
@@ -1072,10 +1059,9 @@ function markDone(){
   try{
     const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     const p={};MATCH_KEYS.forEach(m=>{p[m]=picks[m]||'';});
-    d[userEmail.toLowerCase()]=p;
+    d[(window.userEmail||'').toLowerCase()]=p;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
   }catch(e){}
-  var _sn=document.getElementById('success-name');if(_sn)_sn.textContent=userName?'Welcome, '+userName+'!':'';
 }
 
 document.addEventListener('DOMContentLoaded',()=>{

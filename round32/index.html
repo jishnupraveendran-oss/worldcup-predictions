@@ -122,6 +122,16 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 .shake{animation:shake 0.5s ease;}
 .err{color:#ff4444 !important;font-size:13px !important;margin-top:8px;font-weight:700;background:rgba(255,68,68,0.1);padding:8px 12px;border-radius:8px;border-left:3px solid #ff4444;}
+
+.lb-table{width:100%;border-collapse:collapse;margin:10px 0;border-radius:12px;overflow:hidden;background:#0d1728;border:1px solid rgba(255,255,255,.08)}
+.lb-table th,.lb-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.lb-table th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#a0aec0;background:#101b31;font-weight:700}
+.lb-rank{font-weight:800;color:#f6c90e;width:44px;font-size:13px}
+.lb-name{font-weight:600;color:#fff;font-size:13px}
+.lb-pts{font-weight:700;text-align:right;color:#a0aec0;font-size:12px;white-space:nowrap}
+.lb-alt{background:rgba(255,255,255,.025)}
+.lb-toggle-btn{display:block;width:100%;margin-top:8px;background:rgba(246,201,14,.08);border:1px solid rgba(246,201,14,.3);color:#f6c90e;padding:9px 0;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+.lb-toggle-btn:hover{background:rgba(246,201,14,.2)}
 </style>
 </head>
 <body>
@@ -137,14 +147,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Enter Your Company Email</div>
-      <div class="card-sub">Enter your alias email to get started.</div>
-      <div class="inp-wrap">
-        <input type="email" id="email-input" placeholder="abc_cc@ofti.app" autocomplete="email" oninput="validateEmail()" onkeydown="if(event.key==='Enter')goEmail()"/>
-        <span class="inp-ico">✉️</span>
+      <div class="card-title">Enter Your Details</div>
+      <div class="card-sub">Enter your full name and company email to get started.</div>
+      <div class="inp-wrap" style="margin-bottom:12px">
+        <input type="text" id="name-input" placeholder="Full Name (e.g. Jishnu Raveendran)"
+          autocomplete="name" oninput="validateName()"
+          onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
+        <span class="inp-ico">&#128100;</span>
       </div>
-      <div class="hint">🔒 Only @ofti.app email addresses are allowed.</div>
-      <div id="email-err" class="err" style="display:none">⚠️ Please enter a valid @ofti.app email.</div>
+      <div id="name-err" class="err" style="display:none">&#9888; Please enter your full name (first and last name).</div>
+      <div class="inp-wrap">
+        <input type="email" id="email-input" placeholder="abc.cc@ofti.app" autocomplete="email" oninput="validateEmail()" onkeydown="if(event.key==='Enter')goEmail()"/>
+        <span class="inp-ico">&#9993;</span>
+      </div>
+      <div class="hint">&#128274; Only @ofti.app email addresses are allowed.</div>
+      <div id="email-err" class="err" style="display:none">&#9888; Please enter a valid @ofti.app email.</div>
       <div class="rules">
         <div class="rule"><div class="rule-ico">🔒</div><h4>@ofti.app Only</h4><p>Restricted to company emails</p></div>
         <div class="rule"><div class="rule-ico">1️⃣</div><h4>One Entry</h4><p>One submission per person</p></div>
@@ -617,9 +634,12 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
   <div class="wrap" style="margin-top:32px"><div class="card"><div class="success">
     <span class="trophy">🏆</span>
     <h2>You're In the League!</h2>
+    <p id="success-name" style="color:#f6c90e;font-weight:800;font-size:16px;margin-bottom:4px"></p>
     <p>Your predictions have been saved successfully.</p>
     <p>Good luck — may the best predictor win!</p>
     <p style="font-size:12px;color:#6b7f94;margin-top:16px">Ooredoo Fintech · World Cup Mania Round of 32 2026<br/>Results announced: July 4, 11AM</p>
+    <div class="bracket-title-bar" style="margin-top:20px;text-align:left">&#127942; Prediction Leaderboard</div>
+    <div id="lb-success"></div>
   </div></div></div>
 </div>
 
@@ -630,7 +650,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div style="text-align:center;padding:10px 0 18px">
         <div style="font-size:52px">🏆</div>
         <h2 style="margin:10px 0 6px">Prediction Already Received!</h2>
-        <p style="color:#a0aec0;font-size:14px;margin:0">Submitted as <strong id="already-email" style="color:#f6c90e"></strong></p>
+        <p id="already-name" style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px"></p><p style="color:#a0aec0;font-size:13px;margin:0">Submitted as <strong id="already-email" style="color:#f6c90e"></strong></p>
       </div>
 
       <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:14px;padding:18px 20px;margin:0 0 22px;color:#fff;text-align:center">
@@ -638,6 +658,9 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
         <p style="font-weight:700;margin:0 0 4px;font-size:15px">Your entry is locked in — only one submission allowed.</p>
         <p style="font-size:13px;color:#a0aec0;margin:0">Results announced on <strong style="color:#f6c90e">July 4, 11:00 AM</strong></p>
       </div>
+
+      <div class="bracket-title-bar">&#127942; Prediction Leaderboard</div>
+      <div id="lb-already"></div>
 
       <!-- Your Journey Bracket -->
       <div class="bracket-title-bar">⚽ Your Round of 32 → Round of 16 Journey</div>
@@ -669,7 +692,7 @@ const MATCH_META = {
 const R16_PAIRS=[['M1','M2'],['M3','M4'],['M5','M6'],['M7','M8'],
                  ['M9','M10'],['M11','M12'],['M13','M14'],['M15','M16']];
 
-let userEmail='',currentStep=0;
+let userEmail='',userName='',currentStep=0;
 const picks={};
 const STORAGE_KEY='r32_done_v2';
 
@@ -692,6 +715,16 @@ function showPage(id){
   if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 }
 
+function validateName(){
+  var val=document.getElementById('name-input').value.trim();
+  var inp=document.getElementById('name-input');
+  var err=document.getElementById('name-err');
+  var ok=val.length>=3&&val.indexOf(' ')>0;
+  inp.className=val.length>0?(ok?'ok':'bad'):'';
+  err.style.display=(!ok&&val.length>0)?'block':'none';
+  return ok;
+}
+
 function validateEmail(){
   const val=document.getElementById('email-input').value.trim();
   const inp=document.getElementById('email-input');
@@ -708,66 +741,51 @@ function validateEmail(){
 }
 
 function goEmail(){
-  if(!validateEmail()){
-    const btn=document.getElementById('email-btn');
+  if(!validateName()){
+    var btn=document.getElementById('email-btn');
     btn.classList.add('shake');
-    setTimeout(()=>btn.classList.remove('shake'),600);
+    setTimeout(function(){btn.classList.remove('shake');},600);
+    document.getElementById('name-input').focus();
+    return;
+  }
+  if(!validateEmail()){
+    var btn=document.getElementById('email-btn');
+    btn.classList.add('shake');
+    setTimeout(function(){btn.classList.remove('shake');},600);
     document.getElementById('email-input').focus();
     return;
   }
   userEmail=document.getElementById('email-input').value.trim();
-
-  // STEP 1: localStorage instant check (same device)
+  userName=document.getElementById('name-input').value.trim();
   try{
-    const cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-    const saved=cached[userEmail.toLowerCase()];
-    if(saved && typeof saved==='object' && Object.keys(saved).length>0){
-      showAlreadyPage(userEmail,saved);
-      return;
+    var cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    var saved=cached[userEmail.toLowerCase()];
+    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){
+      showAlreadyPage(userEmail,saved);return;
     }
   }catch(e){}
-
-  // STEP 2: Backend check — blocks entry until confirmed new
-  const btn=document.getElementById('email-btn');
-  btn.textContent='Checking…';btn.disabled=true;
-
-  let done=false;
-
-  const timer=setTimeout(function(){
-    if(done)return; done=true;
-    const old=document.getElementById('_ec');if(old)old.remove();
+  var btn=document.getElementById('email-btn');
+  btn.textContent='Checking...';btn.disabled=true;
+  var checked=false;
+  var fallback=setTimeout(function(){
+    if(checked)return;checked=true;
+    var s=document.getElementById('_ec');if(s)s.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
     currentStep=1;showPage('page-match-M1');
   },5000);
-
   window._ec=function(data){
-    if(done)return; done=true;
-    clearTimeout(timer);
-    const old=document.getElementById('_ec');if(old)old.remove();
+    if(checked)return;checked=true;
+    clearTimeout(fallback);
+    var s=document.getElementById('_ec');if(s)s.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
     if(data&&data.already===true){
-      try{
-        const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-        d[userEmail.toLowerCase()]=data.picks||{};
-        localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
-      }catch(e){}
+      try{var d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');d[userEmail.toLowerCase()]=data.picks||{};localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}
       showAlreadyPage(userEmail,data.picks||{});
-    }else{
-      currentStep=1;showPage('page-match-M1');
-    }
+    }else{currentStep=1;showPage('page-match-M1');}
   };
-
-  const s=document.createElement('script');
-  s.id='_ec';
-  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)
-       +'&email='+encodeURIComponent(userEmail)+'&callback=_ec';
-  s.onerror=function(){
-    if(done)return; done=true;
-    clearTimeout(timer);
-    const old=document.getElementById('_ec');if(old)old.remove();
-    btn.textContent='Start Predicting →';btn.disabled=false;
-    currentStep=1;showPage('page-match-M1');
-  };
+  var s=document.createElement('script');s.id='_ec';
+  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&email='+encodeURIComponent(userEmail)+'&callback=_ec';
+  s.onerror=function(){if(checked)return;checked=true;clearTimeout(fallback);var o=document.getElementById('_ec');if(o)o.remove();btn.textContent='Start Predicting →';btn.disabled=false;currentStep=1;showPage('page-match-M1');};
   document.head.appendChild(s);
 }
 
@@ -822,11 +840,12 @@ function buildReview(){
 }
 
 function showAlreadyPage(email, savedPicks){
-  document.getElementById('already-email').textContent = email;
+  document.getElementById('already-email').textContent=email;
+  var _an=document.getElementById('already-name');if(_an)_an.textContent=userName||'';
 
   // Render bracket journey
   renderBracketIn('alreadyBracketGrid', savedPicks, false);
-
+  renderLeaderboard('lb-already');
   showPage('page-already');
 }
 
@@ -854,6 +873,155 @@ function renderBracketIn(targetId, p, editable){
     '<div class="b-col">'+makeCol(right)+'</div>';
 }
 
+
+const LEADERBOARD_DATA=[
+  {name:'Ahmed Jabir',points:18},
+  {name:'Sara Al-Muhairi',points:16},
+  {name:'Omar Hassan',points:20},
+  {name:'Fatima Al-Farsi',points:10},
+  {name:'Khalid Al-Shammari',points:14},
+  {name:'Nour Khalil',points:22},
+  {name:'Jassim Qasim',points:6},
+  {name:'Layla Malik',points:8},
+  {name:'Yousef Al-Qahtani',points:6},
+  {name:'Mariam Al-Muhairi',points:12},
+  {name:'Hassan Malik',points:6},
+  {name:'Aisha Barakat',points:24},
+  {name:'Tariq Hassan',points:14},
+  {name:'Hind Al-Balushi',points:6},
+  {name:'Saad Al-Ali',points:14},
+  {name:'Reem Hamdan',points:12},
+  {name:'Bilal Al-Muhairi',points:16},
+  {name:'Dina Al-Ali',points:8},
+  {name:'Faisal Abdulla',points:10},
+  {name:'Mona Murad',points:8},
+  {name:'Ziad Al-Farsi',points:14},
+  {name:'Lina Al-Dosari',points:10},
+  {name:'Hamad Malik',points:20},
+  {name:'Noura Malik',points:8},
+  {name:'Walid Al-Zahrani',points:20},
+  {name:'Sama Othman',points:6},
+  {name:'Adel Jabir',points:8},
+  {name:'Rana Hussain',points:20},
+  {name:'Kareem Zayed',points:18},
+  {name:'Sana Al-Rashid',points:10},
+  {name:'Basim Saif',points:22},
+  {name:'Hala Al-Ali',points:12},
+  {name:'Nasser Hamdan',points:16},
+  {name:'Widad Malik',points:6},
+  {name:'Rashid Murad',points:14},
+  {name:'Farah Hassan',points:18},
+  {name:'Majid Murad',points:10},
+  {name:'Ghada Al-Thani',points:10},
+  {name:'Tarek Nofal',points:10},
+  {name:'Nadia Qasim',points:12},
+  {name:'Amr Al-Ali',points:8},
+  {name:'Salma Al-Sayed',points:8},
+  {name:'Wael Al-Khatib',points:24},
+  {name:'Heba Al-Farsi',points:16},
+  {name:'Sami Al-Farsi',points:6},
+  {name:'Dalia Hussain',points:16},
+  {name:'Mazen Saleh',points:10},
+  {name:'Suha Al-Nasser',points:18},
+  {name:'Loay Al-Sayed',points:8},
+  {name:'Abeer Al-Zahrani',points:12},
+  {name:'Imad Al-Balushi',points:10},
+  {name:'Rand Malik',points:10},
+  {name:'Faris Saif',points:14},
+  {name:'Nada Malik',points:12},
+  {name:'Rami Abdulla',points:12},
+  {name:'Ghazal Al-Harbi',points:16},
+  {name:'Zaki Al-Rashid',points:16},
+  {name:'Maha Al-Muhairi',points:8},
+  {name:'Hani Al-Dosari',points:8},
+  {name:'Inas Qasim',points:12},
+  {name:'Adnan Jabir',points:12},
+  {name:'Yara Hassan',points:10},
+  {name:'Suleiman Al-Thani',points:16},
+  {name:'Ruba Al-Ali',points:10},
+  {name:'Karim Al-Khatib',points:10},
+  {name:'Asma Al-Qahtani',points:10},
+  {name:'Munir Jabir',points:18},
+  {name:'Lara Qasim',points:10},
+  {name:'Bassel Nofal',points:12},
+  {name:'Saba Al-Zahrani',points:8},
+  {name:'Hazem Al-Thani',points:10},
+  {name:'Hana Qasim',points:20},
+  {name:'Diaa Abdulla',points:14},
+  {name:'Alaa Al-Balushi',points:6},
+  {name:'Ammar Saleh',points:8},
+  {name:'Ola Ibrahim',points:18},
+  {name:'Mostafa Saleh',points:6},
+  {name:'Deema Abdulla',points:14},
+  {name:'Sherif Al-Mansouri',points:6},
+  {name:'Maysa Al-Farsi',points:14},
+  {name:'Tamer Al-Farsi',points:16},
+  {name:'Amir Al-Balushi',points:12},
+  {name:'Essam Abdulla',points:18},
+  {name:'Sameh Al-Ali',points:8},
+  {name:'Ghassan Othman',points:8},
+  {name:'Yazeed Barakat',points:14},
+  {name:'Dana Al-Shammari',points:8},
+  {name:'Obada Al-Qahtani',points:14},
+  {name:'Shatha Saleh',points:14},
+  {name:'Husam Hamdan',points:10},
+  {name:'Waleed Al-Farsi',points:6},
+  {name:'Khaloud Al-Kuwari',points:6},
+  {name:'Nawal Al-Mansouri',points:22},
+  {name:'Rifaat Al-Rashid',points:16},
+  {name:'Rola Al-Thani',points:18},
+  {name:'Nidal Al-Dosari',points:10},
+  {name:'Fadia Al-Ali',points:12},
+  {name:'Sulaiman Al-Muhairi',points:12},
+  {name:'Bayan Jabir',points:12},
+  {name:'Rawan Al-Dosari',points:12}
+];
+
+function _buildLB(data,showAll){
+  var sorted=data.slice().sort(function(a,b){return b.points-a.points||a.name.localeCompare(b.name);});
+  var rank=0,prev=null;
+  sorted.forEach(function(r,i){if(prev===null||r.points!==prev){rank=i+1;prev=r.points;}r._rank=rank;});
+  var visible=showAll?sorted:sorted.slice(0,10);
+  var medals={1:'&#129351;',2:'&#129352;',3:'&#129353;'};
+  var rows='';
+  visible.forEach(function(r,i){
+    rows+='<tr class="'+(i%2?'lb-alt':'')+'">'
+      +'<td class="lb-rank">'+(medals[r._rank]||r._rank)+'</td>'
+      +'<td class="lb-name">'+r.name+'</td>'
+      +'<td class="lb-pts">'+r.points+' pts</td>'
+      +'</tr>';
+  });
+  var btn='';
+  if(sorted.length>10){
+    if(!showAll){
+      btn='<button class="lb-toggle-btn" onclick="_expandLB(this)">View More &#9660;</button>';
+    } else {
+      btn='<button class="lb-toggle-btn" onclick="_collapseLB(this)">Minimize &#9650;</button>';
+    }
+  }
+  return '<div class="lb-outer"><table class="lb-table"><thead><tr>'
+    +'<th>Rank</th><th>Name</th><th style="text-align:right">Points</th>'
+    +'</tr></thead><tbody>'+rows+'</tbody></table>'+btn+'</div>';
+}
+
+function _expandLB(btn){
+  var outer=btn.closest('.lb-outer');
+  if(outer) outer.outerHTML=_buildLB(LEADERBOARD_DATA,true);
+}
+
+function _collapseLB(btn){
+  var outer=btn.closest('.lb-outer');
+  if(outer) outer.outerHTML=_buildLB(LEADERBOARD_DATA,false);
+}
+
+function renderLeaderboard(targetId){
+  var el=document.getElementById(targetId);if(!el)return;
+  if(!LEADERBOARD_DATA.length){
+    el.innerHTML='<p style="color:#a0aec0;font-size:13px;padding:12px 0;text-align:center">Leaderboard available after results on July 4.</p>';
+    return;
+  }
+  el.innerHTML=_buildLB(LEADERBOARD_DATA,false);
+}
 function doSubmit(){
   const btn=document.getElementById('sub-btn');
   btn.textContent='Submitting...';btn.disabled=true;
@@ -870,6 +1038,7 @@ function doSubmit(){
   const p=new URLSearchParams();
   p.set('submit','1');
   p.set('email',userEmail);
+  p.set('name',userName);
   p.set('tab',SHEET_TAB);
   p.set('k',_k);
   MATCH_KEYS.forEach(m=>p.set(m,picks[m]||''));
@@ -882,6 +1051,7 @@ function doSubmit(){
     if(data && data.msg === 'saved'){
       // ✅ Backend confirmed save
       markDone();
+      renderLeaderboard('lb-success');
       showPage('page-success');
     } else if(data && data.msg === 'already_submitted'){
       // Duplicate — show their journey
@@ -935,6 +1105,7 @@ function markDone(){
     d[userEmail.toLowerCase()]=p;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
   }catch(e){}
+  var _sn=document.getElementById('success-name');if(_sn)_sn.textContent=userName?'Welcome, '+userName+'!':'';
 }
 
 document.addEventListener('DOMContentLoaded',()=>{

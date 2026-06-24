@@ -657,15 +657,14 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
         <p style="font-size:13px;color:#a0aec0;margin:0">Results announced on <strong style="color:#f6c90e">July 4, 11:00 AM</strong></p>
       </div>
 
-      <div class="bracket-title-bar">&#127942; Prediction Leaderboard</div>
-      <div id="lb-already"></div>
-
       <!-- Your Journey Bracket -->
       <div class="bracket-title-bar">⚽ Your Round of 32 → Round of 16 Journey</div>
       <div class="bracket-graphic"><div class="bracket-grid" id="alreadyBracketGrid"></div></div>
 
 
 
+      <div class="bracket-title-bar" style="margin-top:20px">&#127942; Prediction Leaderboard</div>
+      <div id="lb-already"></div>
       <p style="font-size:11px;color:#6b7f94;margin-top:18px;text-align:center">✅ One submission per participant — yours is locked in.<br/>Ooredoo Fintech · World Cup Mania 2026</p>
     </div>
   </div>
@@ -748,11 +747,10 @@ function goEmail(){
     btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},600);
     document.getElementById('email-input').focus();return;
   }
-  window.userEmail = document.getElementById('email-input').value.trim();
-  window.userName  = document.getElementById('name-input').value.trim();
-  sessionStorage.setItem('r32_name',  window.userName);
-  sessionStorage.setItem('r32_email', window.userEmail);
-  dbg('Name='+window.userName+' Email='+window.userEmail);
+  window.userEmail=document.getElementById('email-input').value.trim();
+  window.userName=document.getElementById('name-input').value.trim();
+  sessionStorage.setItem('r32_name',window.userName);
+  sessionStorage.setItem('r32_email',window.userEmail);
   try{
     var cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     var saved=cached[window.userEmail.toLowerCase()];
@@ -762,14 +760,11 @@ function goEmail(){
   btn.textContent='Checking...';btn.disabled=true;
   var checked=false;
   var fallback=setTimeout(function(){
-    if(checked)return;checked=true;
-    var s=document.getElementById('_ec');if(s)s.remove();
-    btn.textContent='Start Predicting →';btn.disabled=false;
-    window.currentStep=1;showPage('page-match-M1');
+    if(checked)return;checked=true;var s=document.getElementById('_ec');if(s)s.remove();
+    btn.textContent='Start Predicting →';btn.disabled=false;window.currentStep=1;showPage('page-match-M1');
   },5000);
   window._ec=function(data){
-    if(checked)return;checked=true;clearTimeout(fallback);
-    var s=document.getElementById('_ec');if(s)s.remove();
+    if(checked)return;checked=true;clearTimeout(fallback);var s=document.getElementById('_ec');if(s)s.remove();
     btn.textContent='Start Predicting →';btn.disabled=false;
     if(data&&data.already===true){
       try{var d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');d[window.userEmail.toLowerCase()]=data.picks||{};localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}
@@ -984,55 +979,34 @@ function _expandLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB
 function _collapseLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB(LEADERBOARD_DATA,false);}
 function renderLeaderboard(targetId){var el=document.getElementById(targetId);if(!el)return;el.innerHTML=LEADERBOARD_DATA.length?_buildLB(LEADERBOARD_DATA,false):'<p style="color:#a0aec0;font-size:13px;padding:12px 0;text-align:center">Leaderboard available after results on July 4.</p>';}
 function doSubmit(){
-  // Always re-read from sessionStorage in case window var was lost
   var submitName  = window.userName  || sessionStorage.getItem('r32_name')  || '';
   var submitEmail = window.userEmail || sessionStorage.getItem('r32_email') || '';
-  dbg('SUBMIT name='+submitName+' email='+submitEmail);
-
   const btn=document.getElementById('sub-btn');
   btn.textContent='Submitting...';btn.disabled=true;
-
   const missing=MATCH_KEYS.filter(m=>!picks[m]);
-  if(missing.length>0){
-    alert('Please complete all predictions before submitting.');
-    btn.textContent='Submit Predictions';btn.disabled=false;return;
-  }
-
+  if(missing.length>0){alert('Please complete all predictions before submitting.');btn.textContent='Submit Predictions';btn.disabled=false;return;}
   const p=new URLSearchParams();
-  p.set('submit','1');
-  p.set('email', submitEmail);
-  p.set('name',  submitName);
-  p.set('tab',   SHEET_TAB);
-  p.set('k',     _k);
+  p.set('submit','1');p.set('email',submitEmail);p.set('name',submitName);
+  p.set('tab',SHEET_TAB);p.set('k',_k);
   MATCH_KEYS.forEach(m=>p.set(m,picks[m]||''));
-  dbg('Params: email='+p.get('email')+' name='+p.get('name'));
-
   const errBox=document.getElementById('submit-err');
   if(errBox){errBox.style.display='none';errBox.textContent='';}
-
   var attempt=0,maxAttempts=3;
-
   function trySubmit(){
     attempt++;
     if(attempt>1){btn.textContent='Retrying ('+attempt+'/'+maxAttempts+')...';}
-    var done=false;
-    var scriptEl=document.createElement('script');scriptEl.id='_jsonp_submit';
+    var done=false;var scriptEl=document.createElement('script');scriptEl.id='_jsonp_submit';
     var timer=setTimeout(function(){
-      if(done)return;done=true;
-      var old=document.getElementById('_jsonp_submit');if(old)old.remove();
-      if(attempt<maxAttempts){trySubmit();}
-      else{btn.disabled=false;btn.textContent='Submit Predictions';if(errBox){errBox.innerHTML='&#9888; Timed out. Please try again.';errBox.style.display='block';}}
+      if(done)return;done=true;var old=document.getElementById('_jsonp_submit');if(old)old.remove();
+      if(attempt<maxAttempts){trySubmit();}else{btn.disabled=false;btn.textContent='Submit Predictions';if(errBox){errBox.innerHTML='&#9888; Timed out. Please try again.';errBox.style.display='block';}}
     },25000);
     window._submitCallback=function(data){
-      if(done)return;done=true;clearTimeout(timer);
-      var old=document.getElementById('_jsonp_submit');if(old)old.remove();
-      btn.disabled=false;dbg('Response: '+JSON.stringify(data));
+      if(done)return;done=true;clearTimeout(timer);var old=document.getElementById('_jsonp_submit');if(old)old.remove();
+      btn.disabled=false;
       if(data&&data.msg==='saved'){
         markDone();
-        var _sn=document.getElementById('success-name');
-        if(_sn)_sn.textContent=submitName?'Welcome, '+submitName+'!':'';
-        renderLeaderboard('lb-success');
-        renderLeaderboard('lb-success');
+        var _sn=document.getElementById('success-name');if(_sn)_sn.textContent=submitName?'Welcome, '+submitName+'!':'';
+        renderLeaderboard('lb-success');renderLeaderboard('lb-success');
       showPage('page-success');
       }else if(data&&data.msg==='already_submitted'){
         showAlreadyPage(submitEmail,picks);
@@ -1042,14 +1016,11 @@ function doSubmit(){
       }
     };
     scriptEl.onerror=function(){
-      if(done)return;done=true;clearTimeout(timer);
-      var old=document.getElementById('_jsonp_submit');if(old)old.remove();
-      if(attempt<maxAttempts){trySubmit();}
-      else{btn.disabled=false;btn.textContent='Submit Predictions';if(errBox){errBox.textContent='&#9888; Could not reach server. Try again.';errBox.style.display='block';}}
+      if(done)return;done=true;clearTimeout(timer);var old=document.getElementById('_jsonp_submit');if(old)old.remove();
+      if(attempt<maxAttempts){trySubmit();}else{btn.disabled=false;btn.textContent='Submit Predictions';if(errBox){errBox.textContent='&#9888; Could not reach server. Try again.';errBox.style.display='block';}}
     };
-    var fullUrl=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
-    dbg('Attempt '+attempt+' URL: '+fullUrl.substring(0,120));
-    scriptEl.src=fullUrl;document.head.appendChild(scriptEl);
+    scriptEl.src=SCRIPT_URL+'?'+p.toString()+'&callback=_submitCallback';
+    document.head.appendChild(scriptEl);
   }
   trySubmit();
 }

@@ -150,7 +150,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="card-title">Enter Your Details</div>
       <div class="card-sub">Enter your full name and company email to get started.</div>
       <div class="inp-wrap" style="margin-bottom:12px">
-        <input type="text" id="name-input" placeholder="Full Name (e.g. Jishnu Raveendran)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
+        <input type="text" id="name-input" placeholder="Full Name (e.g. Ahmed Ali)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
         <span class="inp-ico">&#128100;</span>
       </div>
       <div id="name-err" class="err" style="display:none">&#9888; Please enter your full name (first and last name).</div>
@@ -755,34 +755,21 @@ function goEmail(){
     btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},600);
     document.getElementById('email-input').focus();return;
   }
-  window.userEmail=document.getElementById('email-input').value.trim();
-  window.userName=document.getElementById('name-input').value.trim();
-  sessionStorage.setItem('r32_name',window.userName);
-  sessionStorage.setItem('r32_email',window.userEmail);
+  window.userEmail = document.getElementById('email-input').value.trim();
+  window.userName  = document.getElementById('name-input').value.trim();
+  sessionStorage.setItem('r32_name',  window.userName);
+  sessionStorage.setItem('r32_email', window.userEmail);
+  // Check localStorage cache first
   try{
     var cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     var saved=cached[window.userEmail.toLowerCase()];
-    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){showAlreadyPage(window.userEmail,saved);return;}
+    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){
+      showAlreadyPage(window.userEmail,saved);return;
+    }
   }catch(e){}
-  var btn=document.getElementById('email-btn');
-  btn.textContent='Checking...';btn.disabled=true;
-  var checked=false;
-  var fallback=setTimeout(function(){
-    if(checked)return;checked=true;var s=document.getElementById('_ec');if(s)s.remove();
-    btn.textContent='Start Predicting →';btn.disabled=false;window.currentStep=1;showPage('page-match-M1');
-  },5000);
-  window._ec=function(data){
-    if(checked)return;checked=true;clearTimeout(fallback);var s=document.getElementById('_ec');if(s)s.remove();
-    btn.textContent='Start Predicting →';btn.disabled=false;
-    if(data&&data.already===true){
-      try{var d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');d[window.userEmail.toLowerCase()]=data.picks||{};localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}
-      showAlreadyPage(window.userEmail,data.picks||{});
-    }else{window.currentStep=1;showPage('page-match-M1');}
-  };
-  var s=document.createElement('script');s.id='_ec';
-  s.src=SCRIPT_URL+'?check=1&tab='+SHEET_TAB+'&k='+encodeURIComponent(_k)+'&email='+encodeURIComponent(window.userEmail)+'&callback=_ec';
-  s.onerror=function(){if(checked)return;checked=true;clearTimeout(fallback);var o=document.getElementById('_ec');if(o)o.remove();btn.textContent='Start Predicting →';btn.disabled=false;window.currentStep=1;showPage('page-match-M1');};
-  document.head.appendChild(s);
+  // Go straight to predictions
+  window.currentStep=1;
+  showPage('page-match-M1');
 }
 
 

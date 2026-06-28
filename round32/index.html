@@ -153,7 +153,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
         <input type="text" id="name-input" placeholder="Full Name (e.g. Ahmed Ali)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
         <span class="inp-ico">&#128100;</span>
       </div>
-      <div id="name-err" class="err" style="display:none">&#9888; Please enter your full name (first and last name).</div>
+      <div id="name-err" class="err" style="display:none">&#9888; Please enter your full name.</div>
       <div class="inp-wrap">
         <input type="email" id="email-input" placeholder="abc_cc@ofti.app" autocomplete="email" oninput="validateEmail()" onkeydown="if(event.key==='Enter')goEmail()"/>
         <span class="inp-ico">&#9993;</span>
@@ -178,19 +178,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M1">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 1 of 16</div>
-    <h2>Match 1: 1A vs 2B</h2>
+    <h2>Match 1: South Africa vs Canada</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M1" onclick="selectWinner('M1','1A',this)">
-        <input type="radio" name="match_M1" value="1A"/>
+      <label class="flag-opt" data-match="M1" onclick="selectWinner('M1','South Africa',this)">
+        <input type="radio" name="match_M1" value="South Africa"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/za.png" alt="South Africa" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">South Africa</span>
       </label>
-      <label class="flag-opt" data-match="M1" onclick="selectWinner('M1','2B',this)">
-        <input type="radio" name="match_M1" value="2B"/>
+      <label class="flag-opt" data-match="M1" onclick="selectWinner('M1','Canada',this)">
+        <input type="radio" name="match_M1" value="Canada"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/ca.png" alt="Canada" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Canada</span>
       </label>
     </div>
@@ -205,19 +207,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M2">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 2 of 16</div>
-    <h2>Match 2: 1C vs 2D</h2>
+    <h2>Match 2: Netherlands vs Morocco</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M2" onclick="selectWinner('M2','1C',this)">
-        <input type="radio" name="match_M2" value="1C"/>
+      <label class="flag-opt" data-match="M2" onclick="selectWinner('M2','Netherlands',this)">
+        <input type="radio" name="match_M2" value="Netherlands"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/nl.png" alt="Netherlands" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Netherlands</span>
       </label>
-      <label class="flag-opt" data-match="M2" onclick="selectWinner('M2','2D',this)">
-        <input type="radio" name="match_M2" value="2D"/>
+      <label class="flag-opt" data-match="M2" onclick="selectWinner('M2','Morocco',this)">
+        <input type="radio" name="match_M2" value="Morocco"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/ma.png" alt="Morocco" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Morocco</span>
       </label>
     </div>
@@ -232,19 +236,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M3">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 3 of 16</div>
-    <h2>Match 3: 1E vs 2F</h2>
+    <h2>Match 3: Germany vs Paraguay</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M3" onclick="selectWinner('M3','1E',this)">
-        <input type="radio" name="match_M3" value="1E"/>
+      <label class="flag-opt" data-match="M3" onclick="selectWinner('M3','Germany',this)">
+        <input type="radio" name="match_M3" value="Germany"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/de.png" alt="Germany" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Germany</span>
       </label>
-      <label class="flag-opt" data-match="M3" onclick="selectWinner('M3','2F',this)">
-        <input type="radio" name="match_M3" value="2F"/>
+      <label class="flag-opt" data-match="M3" onclick="selectWinner('M3','Paraguay',this)">
+        <input type="radio" name="match_M3" value="Paraguay"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/py.png" alt="Paraguay" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Paraguay</span>
       </label>
     </div>
@@ -259,19 +265,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M4">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 4 of 16</div>
-    <h2>Match 4: 1G vs 2H</h2>
+    <h2>Match 4: France vs Sweden</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M4" onclick="selectWinner('M4','1G',this)">
-        <input type="radio" name="match_M4" value="1G"/>
+      <label class="flag-opt" data-match="M4" onclick="selectWinner('M4','France',this)">
+        <input type="radio" name="match_M4" value="France"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/fr.png" alt="France" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">France</span>
       </label>
-      <label class="flag-opt" data-match="M4" onclick="selectWinner('M4','2H',this)">
-        <input type="radio" name="match_M4" value="2H"/>
+      <label class="flag-opt" data-match="M4" onclick="selectWinner('M4','Sweden',this)">
+        <input type="radio" name="match_M4" value="Sweden"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/se.png" alt="Sweden" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Sweden</span>
       </label>
     </div>
@@ -286,19 +294,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M5">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 5 of 16</div>
-    <h2>Match 5: 1B vs 2A</h2>
+    <h2>Match 5: Belgium vs Senegal</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M5" onclick="selectWinner('M5','1B',this)">
-        <input type="radio" name="match_M5" value="1B"/>
+      <label class="flag-opt" data-match="M5" onclick="selectWinner('M5','Belgium',this)">
+        <input type="radio" name="match_M5" value="Belgium"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/be.png" alt="Belgium" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Belgium</span>
       </label>
-      <label class="flag-opt" data-match="M5" onclick="selectWinner('M5','2A',this)">
-        <input type="radio" name="match_M5" value="2A"/>
+      <label class="flag-opt" data-match="M5" onclick="selectWinner('M5','Senegal',this)">
+        <input type="radio" name="match_M5" value="Senegal"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/sn.png" alt="Senegal" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Senegal</span>
       </label>
     </div>
@@ -313,19 +323,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M6">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 6 of 16</div>
-    <h2>Match 6: 1D vs 2C</h2>
+    <h2>Match 6: USA vs Bosnia & Herz.</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M6" onclick="selectWinner('M6','1D',this)">
-        <input type="radio" name="match_M6" value="1D"/>
+      <label class="flag-opt" data-match="M6" onclick="selectWinner('M6','USA',this)">
+        <input type="radio" name="match_M6" value="USA"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/us.png" alt="USA" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">USA</span>
       </label>
-      <label class="flag-opt" data-match="M6" onclick="selectWinner('M6','2C',this)">
-        <input type="radio" name="match_M6" value="2C"/>
+      <label class="flag-opt" data-match="M6" onclick="selectWinner('M6','Bosnia & Herz.',this)">
+        <input type="radio" name="match_M6" value="Bosnia & Herz."/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/ba.png" alt="Bosnia & Herz." style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Bosnia & Herz.</span>
       </label>
     </div>
@@ -340,19 +352,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M7">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 7 of 16</div>
-    <h2>Match 7: 1F vs 2E</h2>
+    <h2>Match 7: Spain vs TBD</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M7" onclick="selectWinner('M7','1F',this)">
-        <input type="radio" name="match_M7" value="1F"/>
+      <label class="flag-opt" data-match="M7" onclick="selectWinner('M7','Spain',this)">
+        <input type="radio" name="match_M7" value="Spain"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/es.png" alt="Spain" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Spain</span>
       </label>
-      <label class="flag-opt" data-match="M7" onclick="selectWinner('M7','2E',this)">
-        <input type="radio" name="match_M7" value="2E"/>
+      <label class="flag-opt" data-match="M7" onclick="selectWinner('M7','TBD',this)">
+        <input type="radio" name="match_M7" value="TBD"/>
         <span class="chk">✓</span>
+        <div style="width:80px;height:54px;border-radius:8px;background:#1a2a3a;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:11px;color:#6b7f94;">TBD</div>
         <span class="match-team">TBD</span>
       </label>
     </div>
@@ -367,19 +381,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M8">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 8 of 16</div>
-    <h2>Match 8: 1H vs 2G</h2>
+    <h2>Match 8: Portugal vs Croatia</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M8" onclick="selectWinner('M8','1H',this)">
-        <input type="radio" name="match_M8" value="1H"/>
+      <label class="flag-opt" data-match="M8" onclick="selectWinner('M8','Portugal',this)">
+        <input type="radio" name="match_M8" value="Portugal"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/pt.png" alt="Portugal" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Portugal</span>
       </label>
-      <label class="flag-opt" data-match="M8" onclick="selectWinner('M8','2G',this)">
-        <input type="radio" name="match_M8" value="2G"/>
+      <label class="flag-opt" data-match="M8" onclick="selectWinner('M8','Croatia',this)">
+        <input type="radio" name="match_M8" value="Croatia"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/hr.png" alt="Croatia" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Croatia</span>
       </label>
     </div>
@@ -394,19 +410,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M9">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 9 of 16</div>
-    <h2>Match 9: 1I vs 2J</h2>
+    <h2>Match 9: Brazil vs Japan</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M9" onclick="selectWinner('M9','1I',this)">
-        <input type="radio" name="match_M9" value="1I"/>
+      <label class="flag-opt" data-match="M9" onclick="selectWinner('M9','Brazil',this)">
+        <input type="radio" name="match_M9" value="Brazil"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/br.png" alt="Brazil" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Brazil</span>
       </label>
-      <label class="flag-opt" data-match="M9" onclick="selectWinner('M9','2J',this)">
-        <input type="radio" name="match_M9" value="2J"/>
+      <label class="flag-opt" data-match="M9" onclick="selectWinner('M9','Japan',this)">
+        <input type="radio" name="match_M9" value="Japan"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/jp.png" alt="Japan" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Japan</span>
       </label>
     </div>
@@ -421,19 +439,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M10">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 10 of 16</div>
-    <h2>Match 10: 1K vs 2L</h2>
+    <h2>Match 10: Ivory Coast vs Norway</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M10" onclick="selectWinner('M10','1K',this)">
-        <input type="radio" name="match_M10" value="1K"/>
+      <label class="flag-opt" data-match="M10" onclick="selectWinner('M10','Ivory Coast',this)">
+        <input type="radio" name="match_M10" value="Ivory Coast"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/ci.png" alt="Ivory Coast" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Ivory Coast</span>
       </label>
-      <label class="flag-opt" data-match="M10" onclick="selectWinner('M10','2L',this)">
-        <input type="radio" name="match_M10" value="2L"/>
+      <label class="flag-opt" data-match="M10" onclick="selectWinner('M10','Norway',this)">
+        <input type="radio" name="match_M10" value="Norway"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/no.png" alt="Norway" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Norway</span>
       </label>
     </div>
@@ -448,19 +468,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M11">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 11 of 16</div>
-    <h2>Match 11: 1J vs 2I</h2>
+    <h2>Match 11: Mexico vs Ecuador</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M11" onclick="selectWinner('M11','1J',this)">
-        <input type="radio" name="match_M11" value="1J"/>
+      <label class="flag-opt" data-match="M11" onclick="selectWinner('M11','Mexico',this)">
+        <input type="radio" name="match_M11" value="Mexico"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/mx.png" alt="Mexico" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Mexico</span>
       </label>
-      <label class="flag-opt" data-match="M11" onclick="selectWinner('M11','2I',this)">
-        <input type="radio" name="match_M11" value="2I"/>
+      <label class="flag-opt" data-match="M11" onclick="selectWinner('M11','Ecuador',this)">
+        <input type="radio" name="match_M11" value="Ecuador"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/ec.png" alt="Ecuador" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">Ecuador</span>
       </label>
     </div>
@@ -475,19 +497,21 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M12">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 12 of 16</div>
-    <h2>Match 12: 1L vs 2K</h2>
+    <h2>Match 12: England vs DR Congo</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M12" onclick="selectWinner('M12','1L',this)">
-        <input type="radio" name="match_M12" value="1L"/>
+      <label class="flag-opt" data-match="M12" onclick="selectWinner('M12','England',this)">
+        <input type="radio" name="match_M12" value="England"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/gb-eng.png" alt="England" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">England</span>
       </label>
-      <label class="flag-opt" data-match="M12" onclick="selectWinner('M12','2K',this)">
-        <input type="radio" name="match_M12" value="2K"/>
+      <label class="flag-opt" data-match="M12" onclick="selectWinner('M12','DR Congo',this)">
+        <input type="radio" name="match_M12" value="DR Congo"/>
         <span class="chk">✓</span>
+        <img src="https://flagcdn.com/w80/cd.png" alt="DR Congo" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
         <span class="match-team">DR Congo</span>
       </label>
     </div>
@@ -502,20 +526,22 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M13">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 13 of 16</div>
-    <h2>Match 13: 1B vs 2C</h2>
+    <h2>Match 13: Switzerland vs TBD</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M13" onclick="selectWinner('M13','1B',this)">
-        <input type="radio" name="match_M13" value="1B"/>
+      <label class="flag-opt" data-match="M13" onclick="selectWinner('M13','Switzerland',this)">
+        <input type="radio" name="match_M13" value="Switzerland"/>
         <span class="chk">✓</span>
-        <span class="match-team">Belgium</span>
+        <img src="https://flagcdn.com/w80/ch.png" alt="Switzerland" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
+        <span class="match-team">Switzerland</span>
       </label>
-      <label class="flag-opt" data-match="M13" onclick="selectWinner('M13','2C',this)">
-        <input type="radio" name="match_M13" value="2C"/>
+      <label class="flag-opt" data-match="M13" onclick="selectWinner('M13','TBD',this)">
+        <input type="radio" name="match_M13" value="TBD"/>
         <span class="chk">✓</span>
-        <span class="match-team">Bosnia & Herz.</span>
+        <div style="width:80px;height:54px;border-radius:8px;background:#1a2a3a;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:11px;color:#6b7f94;">TBD</div>
+        <span class="match-team">TBD</span>
       </label>
     </div>
     <div class="warn" id="warn-M13">⚠️ Please select a winner to continue.</div>
@@ -529,20 +555,22 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M14">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 14 of 16</div>
-    <h2>Match 14: 1D vs 2A</h2>
+    <h2>Match 14: Colombia vs Ghana</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M14" onclick="selectWinner('M14','1D',this)">
-        <input type="radio" name="match_M14" value="1D"/>
+      <label class="flag-opt" data-match="M14" onclick="selectWinner('M14','Colombia',this)">
+        <input type="radio" name="match_M14" value="Colombia"/>
         <span class="chk">✓</span>
-        <span class="match-team">USA</span>
+        <img src="https://flagcdn.com/w80/co.png" alt="Colombia" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
+        <span class="match-team">Colombia</span>
       </label>
-      <label class="flag-opt" data-match="M14" onclick="selectWinner('M14','2A',this)">
-        <input type="radio" name="match_M14" value="2A"/>
+      <label class="flag-opt" data-match="M14" onclick="selectWinner('M14','Ghana',this)">
+        <input type="radio" name="match_M14" value="Ghana"/>
         <span class="chk">✓</span>
-        <span class="match-team">Senegal</span>
+        <img src="https://flagcdn.com/w80/gh.png" alt="Ghana" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
+        <span class="match-team">Ghana</span>
       </label>
     </div>
     <div class="warn" id="warn-M14">⚠️ Please select a winner to continue.</div>
@@ -556,20 +584,22 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M15">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 15 of 16</div>
-    <h2>Match 15: 1F vs 2G</h2>
+    <h2>Match 15: Australia vs Egypt</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M15" onclick="selectWinner('M15','1F',this)">
-        <input type="radio" name="match_M15" value="1F"/>
+      <label class="flag-opt" data-match="M15" onclick="selectWinner('M15','Australia',this)">
+        <input type="radio" name="match_M15" value="Australia"/>
         <span class="chk">✓</span>
-        <span class="match-team">Spain</span>
+        <img src="https://flagcdn.com/w80/au.png" alt="Australia" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
+        <span class="match-team">Australia</span>
       </label>
-      <label class="flag-opt" data-match="M15" onclick="selectWinner('M15','2G',this)">
-        <input type="radio" name="match_M15" value="2G"/>
+      <label class="flag-opt" data-match="M15" onclick="selectWinner('M15','Egypt',this)">
+        <input type="radio" name="match_M15" value="Egypt"/>
         <span class="chk">✓</span>
-        <span class="match-team">Croatia</span>
+        <img src="https://flagcdn.com/w80/eg.png" alt="Egypt" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
+        <span class="match-team">Egypt</span>
       </label>
     </div>
     <div class="warn" id="warn-M15">⚠️ Please select a winner to continue.</div>
@@ -583,20 +613,22 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
 <div class="pg" id="page-match-M16">
   <div class="grp-hero">
     <div class="kicker">Round of 32 · Match 16 of 16</div>
-    <h2>Match 16: 1H vs 2E</h2>
+    <h2>Match 16: Argentina vs Cape Verde</h2>
   </div>
   <div class="wrap"><div class="card">
     <div class="card-title">Who wins?</div>
     <div class="flag-grid two-col">
-      <label class="flag-opt" data-match="M16" onclick="selectWinner('M16','1H',this)">
-        <input type="radio" name="match_M16" value="1H"/>
+      <label class="flag-opt" data-match="M16" onclick="selectWinner('M16','Argentina',this)">
+        <input type="radio" name="match_M16" value="Argentina"/>
         <span class="chk">✓</span>
-        <span class="match-team">Portugal</span>
+        <img src="https://flagcdn.com/w80/ar.png" alt="Argentina" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
+        <span class="match-team">Argentina</span>
       </label>
-      <label class="flag-opt" data-match="M16" onclick="selectWinner('M16','2E',this)">
-        <input type="radio" name="match_M16" value="2E"/>
+      <label class="flag-opt" data-match="M16" onclick="selectWinner('M16','Cape Verde',this)">
+        <input type="radio" name="match_M16" value="Cape Verde"/>
         <span class="chk">✓</span>
-        <span class="match-team">TBD</span>
+        <img src="https://flagcdn.com/w80/cv.png" alt="Cape Verde" style="width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35);"/>
+        <span class="match-team">Cape Verde</span>
       </label>
     </div>
     <div class="warn" id="warn-M16">⚠️ Please select a winner to continue.</div>
@@ -677,22 +709,22 @@ const SHEET_TAB  = 'R32_Responses';
 const _k = (s=>Array.from(s).map((c,i)=>String.fromCharCode(c.charCodeAt(0)^(i%7+3))).join(''))(atob('ZjQxPzFqazVmMjBia2xgZjFnYTxsYDBkZDAwOmU2NWU/bWxgNDQ+MTE9YTdhNGQ8'));
 
 const MATCH_META = {
-  M1:{label:"Match 1",team1:"South Africa",team2:"Canada",flag1:"https://flagcdn.com/w80/za.png",flag2:"https://flagcdn.com/w80/ca.png"},
-  M2:{label:"Match 2",team1:"Netherlands",team2:"Morocco",flag1:"https://flagcdn.com/w80/nl.png",flag2:"https://flagcdn.com/w80/ma.png"},
-  M3:{label:"Match 3",team1:"Germany",team2:"Paraguay",flag1:"https://flagcdn.com/w80/de.png",flag2:"https://flagcdn.com/w80/py.png"},
-  M4:{label:"Match 4",team1:"France",team2:"Sweden",flag1:"https://flagcdn.com/w80/fr.png",flag2:"https://flagcdn.com/w80/se.png"},
-  M5:{label:"Match 5",team1:"Belgium",team2:"Senegal",flag1:"https://flagcdn.com/w80/be.png",flag2:"https://flagcdn.com/w80/sn.png"},
-  M6:{label:"Match 6",team1:"USA",team2:"Bosnia & Herz.",flag1:"https://flagcdn.com/w80/us.png",flag2:"https://flagcdn.com/w80/ba.png"},
-  M7:{label:"Match 7",team1:"Spain",team2:"TBD",flag1:"https://flagcdn.com/w80/es.png",flag2:""},
-  M8:{label:"Match 8",team1:"Portugal",team2:"Croatia",flag1:"https://flagcdn.com/w80/pt.png",flag2:"https://flagcdn.com/w80/hr.png"},
-  M9:{label:"Match 9",team1:"Brazil",team2:"Japan",flag1:"https://flagcdn.com/w80/br.png",flag2:"https://flagcdn.com/w80/jp.png"},
-  M10:{label:"Match 10",team1:"Ivory Coast",team2:"Norway",flag1:"https://flagcdn.com/w80/ci.png",flag2:"https://flagcdn.com/w80/no.png"},
-  M11:{label:"Match 11",team1:"Mexico",team2:"Ecuador",flag1:"https://flagcdn.com/w80/mx.png",flag2:"https://flagcdn.com/w80/ec.png"},
-  M12:{label:"Match 12",team1:"England",team2:"DR Congo",flag1:"https://flagcdn.com/w80/gb-eng.png",flag2:"https://flagcdn.com/w80/cd.png"},
-  M13:{label:"Match 13",team1:"Switzerland",team2:"TBD",flag1:"https://flagcdn.com/w80/ch.png",flag2:""},
-  M14:{label:"Match 14",team1:"Colombia",team2:"Ghana",flag1:"https://flagcdn.com/w80/co.png",flag2:"https://flagcdn.com/w80/gh.png"},
-  M15:{label:"Match 15",team1:"Australia",team2:"Egypt",flag1:"https://flagcdn.com/w80/au.png",flag2:"https://flagcdn.com/w80/eg.png"},
-  M16:{label:"Match 16",team1:"Argentina",team2:"Cape Verde",flag1:"https://flagcdn.com/w80/ar.png",flag2:"https://flagcdn.com/w80/cv.png"}
+  M1:{label:"Match 1",teams:["South Africa","Canada"],flag1:"https://flagcdn.com/w80/za.png",flag2:"https://flagcdn.com/w80/ca.png"},
+  M2:{label:"Match 2",teams:["Netherlands","Morocco"],flag1:"https://flagcdn.com/w80/nl.png",flag2:"https://flagcdn.com/w80/ma.png"},
+  M3:{label:"Match 3",teams:["Germany","Paraguay"],flag1:"https://flagcdn.com/w80/de.png",flag2:"https://flagcdn.com/w80/py.png"},
+  M4:{label:"Match 4",teams:["France","Sweden"],flag1:"https://flagcdn.com/w80/fr.png",flag2:"https://flagcdn.com/w80/se.png"},
+  M5:{label:"Match 5",teams:["Belgium","Senegal"],flag1:"https://flagcdn.com/w80/be.png",flag2:"https://flagcdn.com/w80/sn.png"},
+  M6:{label:"Match 6",teams:["USA","Bosnia & Herz."],flag1:"https://flagcdn.com/w80/us.png",flag2:"https://flagcdn.com/w80/ba.png"},
+  M7:{label:"Match 7",teams:["Spain","TBD"],flag1:"https://flagcdn.com/w80/es.png",flag2:""},
+  M8:{label:"Match 8",teams:["Portugal","Croatia"],flag1:"https://flagcdn.com/w80/pt.png",flag2:"https://flagcdn.com/w80/hr.png"},
+  M9:{label:"Match 9",teams:["Brazil","Japan"],flag1:"https://flagcdn.com/w80/br.png",flag2:"https://flagcdn.com/w80/jp.png"},
+  M10:{label:"Match 10",teams:["Ivory Coast","Norway"],flag1:"https://flagcdn.com/w80/ci.png",flag2:"https://flagcdn.com/w80/no.png"},
+  M11:{label:"Match 11",teams:["Mexico","Ecuador"],flag1:"https://flagcdn.com/w80/mx.png",flag2:"https://flagcdn.com/w80/ec.png"},
+  M12:{label:"Match 12",teams:["England","DR Congo"],flag1:"https://flagcdn.com/w80/gb-eng.png",flag2:"https://flagcdn.com/w80/cd.png"},
+  M13:{label:"Match 13",teams:["Switzerland","TBD"],flag1:"https://flagcdn.com/w80/ch.png",flag2:""},
+  M14:{label:"Match 14",teams:["Colombia","Ghana"],flag1:"https://flagcdn.com/w80/co.png",flag2:"https://flagcdn.com/w80/gh.png"},
+  M15:{label:"Match 15",teams:["Australia","Egypt"],flag1:"https://flagcdn.com/w80/au.png",flag2:"https://flagcdn.com/w80/eg.png"},
+  M16:{label:"Match 16",teams:["Argentina","Cape Verde"],flag1:"https://flagcdn.com/w80/ar.png",flag2:"https://flagcdn.com/w80/cv.png"}
 };
 const R16_PAIRS=[['M1','M2'],['M3','M4'],['M5','M6'],['M7','M8'],
                  ['M9','M10'],['M11','M12'],['M13','M14'],['M15','M16']];
@@ -726,7 +758,7 @@ function validateName(){
   var err=document.getElementById('name-err');
   var ok=val.length>=3&&val.indexOf(' ')>0;
   inp.className=val.length>0?(ok?'ok':'bad'):'';
-  err.style.display=(!ok&&val.length>0)?'block':'none';
+  if(err)err.style.display=(!ok&&val.length>0)?'block':'none';
   return ok;
 }
 function validateEmail(){
@@ -755,19 +787,15 @@ function goEmail(){
     btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},600);
     document.getElementById('email-input').focus();return;
   }
-  window.userEmail = document.getElementById('email-input').value.trim();
-  window.userName  = document.getElementById('name-input').value.trim();
-  sessionStorage.setItem('r32_name',  window.userName);
-  sessionStorage.setItem('r32_email', window.userEmail);
-  // Check localStorage cache first
+  window.userEmail=document.getElementById('email-input').value.trim();
+  window.userName=document.getElementById('name-input').value.trim();
+  sessionStorage.setItem('r32_name',window.userName);
+  sessionStorage.setItem('r32_email',window.userEmail);
   try{
     var cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
     var saved=cached[window.userEmail.toLowerCase()];
-    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){
-      showAlreadyPage(window.userEmail,saved);return;
-    }
+    if(saved&&typeof saved==='object'&&Object.keys(saved).length>0){showAlreadyPage(window.userEmail,saved);return;}
   }catch(e){}
-  // Go straight to predictions
   window.currentStep=1;
   showPage('page-match-M1');
 }
@@ -960,7 +988,7 @@ function _buildLB(data,showAll){
 }
 function _expandLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB(LEADERBOARD_DATA,true);}
 function _collapseLB(btn){var o=btn.closest('.lb-outer');if(o)o.outerHTML=_buildLB(LEADERBOARD_DATA,false);}
-function renderLeaderboard(targetId){var el=document.getElementById(targetId);if(!el)return;el.innerHTML=LEADERBOARD_DATA.length?_buildLB(LEADERBOARD_DATA,false):'<p style="color:#a0aec0;font-size:13px;padding:12px 0;text-align:center">Leaderboard available after results on July 4.</p>';}
+function renderLeaderboard(targetId){var el=document.getElementById(targetId);if(!el)return;el.innerHTML=LEADERBOARD_DATA.length?_buildLB(LEADERBOARD_DATA,false):'';}
 function doSubmit(){
   var submitName  = window.userName  || sessionStorage.getItem('r32_name')  || '';
   var submitEmail = window.userEmail || sessionStorage.getItem('r32_email') || '';
@@ -976,8 +1004,7 @@ function doSubmit(){
   if(errBox){errBox.style.display='none';errBox.textContent='';}
   var attempt=0,maxAttempts=3;
   function trySubmit(){
-    attempt++;
-    if(attempt>1){btn.textContent='Retrying ('+attempt+'/'+maxAttempts+')...';}
+    attempt++;if(attempt>1){btn.textContent='Retrying ('+attempt+'/'+maxAttempts+')...';}
     var done=false;var scriptEl=document.createElement('script');scriptEl.id='_jsonp_submit';
     var timer=setTimeout(function(){
       if(done)return;done=true;var old=document.getElementById('_jsonp_submit');if(old)old.remove();
@@ -987,8 +1014,8 @@ function doSubmit(){
       if(done)return;done=true;clearTimeout(timer);var old=document.getElementById('_jsonp_submit');if(old)old.remove();
       btn.disabled=false;
       if(data&&data.msg==='saved'){
-        markDone();
-        var _sn=document.getElementById('success-name');if(_sn)_sn.textContent=submitName?'Welcome, '+submitName+'!':'';
+        markDone();var _sn=document.getElementById('success-name');
+        if(_sn)_sn.textContent=submitName?'Welcome, '+submitName+'!':'';
         renderLeaderboard('lb-success');renderLeaderboard('lb-success');
       showPage('page-success');
       }else if(data&&data.msg==='already_submitted'){
@@ -1031,30 +1058,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     inp.addEventListener('input',validateEmail);
   }
 });
-
-// Inject real flags into match option cards
-document.addEventListener('DOMContentLoaded', function() {
-  Object.keys(MATCH_META).forEach(function(mid) {
-    var m = MATCH_META[mid];
-    var opts = document.querySelectorAll('.flag-opt[data-match="' + mid + '"]');
-    if (opts.length >= 2) {
-      function addFlag(opt, flagUrl, teamName) {
-        if (!flagUrl) return;
-        var existing = opt.querySelector('img');
-        if (!existing) {
-          var img = document.createElement('img');
-          img.src = flagUrl;
-          img.alt = teamName;
-          img.style.cssText = 'width:80px;height:54px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 10px;box-shadow:0 4px 12px rgba(0,0,0,.35)';
-          opt.insertBefore(img, opt.querySelector('input').nextSibling);
-        }
-      }
-      addFlag(opts[0], m.flag1, m.team1);
-      addFlag(opts[1], m.flag2, m.team2);
-    }
-  });
-});
-
 </script>
 
 <!-- DEBUG PANEL — remove before production or keep hidden -->

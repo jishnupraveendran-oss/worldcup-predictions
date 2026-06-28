@@ -1065,31 +1065,68 @@ document.addEventListener('DOMContentLoaded',()=>{
   showPage('page-closed');
 });
 
-function clearLookupErr(){
-  var e=document.getElementById('lookup-err');
-  if(e) e.style.display='none';
-}
 
 function lookupPredictions(){
-  var email=(document.getElementById('lookup-email').value||'').trim().toLowerCase();
+  var rawEmail=(document.getElementById('lookup-email').value||'').trim().toLowerCase();
   var err=document.getElementById('lookup-err');
-  if(!email || !email.endsWith('@ofti.app')){
+  var btn=document.querySelector('#page-closed .btn.pri');
+
+  if(!rawEmail || !rawEmail.endsWith('@ofti.app')){
     if(err){err.textContent='⚠️ Please enter a valid @ofti.app email.';err.style.display='block';}
     return;
   }
-  var stored={};
-  try{ stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){}
-  var saved=stored[email];
-  if(!saved || typeof saved!=='object' || Object.keys(saved).length===0){
-    if(err){err.textContent='⚠️ No predictions found for this email. Predictions may have been submitted on another device.';err.style.display='block';}
-    return;
-  }
-  var title=document.getElementById('lookup-title');
-  var sub=document.getElementById('lookup-sub');
-  if(title) title.textContent='My Round of 32 Picks';
-  if(sub) sub.textContent='Submitted as: '+email;
-  renderBracketIn('lookup-bracket', saved, false);
-  showPage('page-lookup');
+
+  if(btn){btn.textContent='Looking up...';btn.disabled=true;}
+  if(err) err.style.display='none';
+
+  var done=false;
+  var scriptEl=document.createElement('script');
+  scriptEl.id='_jsonp_lookup';
+
+  var timer=setTimeout(function(){
+    if(done)return;done=true;
+    var old=document.getElementById('_jsonp_lookup');if(old)old.remove();
+    if(btn){btn.textContent='View My Predictions →';btn.disabled=false;}
+    if(err){err.textContent='⚠️ Request timed out. Please try again.';err.style.display='block';}
+  },15000);
+
+  window._lookupCallback=function(data){
+    if(done)return;done=true;
+    clearTimeout(timer);
+    var old=document.getElementById('_jsonp_lookup');if(old)old.remove();
+    if(btn){btn.textContent='View My Predictions →';btn.disabled=false;}
+
+    if(data && data.found && data.picks){
+      var sub=document.getElementById('lookup-sub');
+      var title=document.getElementById('lookup-title');
+      if(title) title.textContent='My Round of 32 Picks';
+      if(sub) sub.innerHTML='Submitted as: <strong style="color:#f6c90e">'+rawEmail+'</strong>';
+      renderBracketIn('lookup-bracket', data.picks, false);
+      showPage('page-lookup');
+    } else {
+      if(err){
+        err.textContent='⚠️ No predictions found for this email.';
+        err.style.display='block';
+      }
+    }
+  };
+
+  scriptEl.onerror=function(){
+    if(done)return;done=true;
+    clearTimeout(timer);
+    var old=document.getElementById('_jsonp_lookup');if(old)old.remove();
+    if(btn){btn.textContent='View My Predictions →';btn.disabled=false;}
+    if(err){err.textContent='⚠️ Could not reach server. Please try again.';err.style.display='block';}
+  };
+
+  var p=new URLSearchParams();
+  p.set('action','lookup');
+  p.set('email',rawEmail);
+  p.set('tab',SHEET_TAB);
+  p.set('k',_k);
+  p.set('callback','_lookupCallback');
+  scriptEl.src=SCRIPT_URL+'?'+p.toString();
+  document.head.appendChild(scriptEl);
 }
 </script>
 
@@ -1119,28 +1156,10 @@ function lookupPredictions(){
       <div id="lb-closed"></div>
     </div>
 
-    <!-- View my predictions card -->
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title" style="font-size:16px;margin-bottom:6px">🔍 View My Predictions</div>
-      <p style="color:#a0aec0;font-size:13px;margin:0 0 14px">Enter your @ofti.app email to view your submitted predictions.</p>
-      <div class="inp-wrap" style="margin-bottom:10px">
-        <input type="email" id="lookup-email" placeholder="abc_cc@ofti.app" autocomplete="email"
-          oninput="clearLookupErr()"
-          onkeydown="if(event.key==='Enter')lookupPredictions()"/>
-        <span class="inp-ico">✉️</span>
-      </div>
-      <div id="lookup-err" class="err" style="display:none;margin-bottom:8px">⚠️ No predictions found for this email.</div>
-      <button class="btn pri" style="width:100%" onclick="lookupPredictions()">View My Predictions →</button>
-    </div>
-
     <p style="font-size:11px;color:#6b7f94;margin-top:4px;text-align:center">✅ One submission per participant — yours is locked in.<br/>Ooredoo Fintech · World Cup Mania 2026</p>
   </div>
 </div>
 
-<!-- Lookup result page -->
-<div id="page-lookup" class="pg">
-  <div class="grp-hero">
-    <div class="kicker">Your Prediction Journey</div>
     <h2 id="lookup-title">My Round of 32 Picks</h2>
   </div>
   <div class="wrap">

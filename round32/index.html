@@ -150,7 +150,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="card-title">Enter Your Details</div>
       <div class="card-sub">Enter your full name and company email to get started.</div>
       <div class="inp-wrap" style="margin-bottom:12px">
-        <input type="text" id="name-input" placeholder="Full Name (e.g. Lionel Messi)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
+        <input type="text" id="name-input" placeholder="Full Name (e.g. Ahmed Ali)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
         <span class="inp-ico">&#128100;</span>
       </div>
       <div id="name-err" class="err" style="display:none">&#9888; Please enter your full name.</div>
@@ -888,6 +888,12 @@ function renderBracketIn(targetId, p, editable){
 }
 
 
+// ============================================================
+// 📋 UPDATE LEADERBOARD HERE DAILY
+// Format: {name:'Full Name', points: NUMBER},
+// Sorted automatically — just update the points values below.
+// Last updated: 28 June 2026
+// ============================================================
 const LEADERBOARD_DATA=[
   {name:'Carlyn Llado',points:24},
   {name:'Aaron Fernandes',points:22},
@@ -1054,13 +1060,37 @@ document.addEventListener('DOMContentLoaded',()=>{
     localStorage.removeItem(STORAGE_KEY);
     console.log('localStorage cleared');
   }
-
-  const inp=document.getElementById('email-input');
-  if(inp){
-    inp.addEventListener('keydown',e=>{if(e.key==='Enter')goEmail();});
-    inp.addEventListener('input',validateEmail);
-  }
+  // ── FORM CLOSED: skip straight to leaderboard ──
+  renderLeaderboard('lb-closed');
+  showPage('page-closed');
 });
+
+function clearLookupErr(){
+  var e=document.getElementById('lookup-err');
+  if(e) e.style.display='none';
+}
+
+function lookupPredictions(){
+  var email=(document.getElementById('lookup-email').value||'').trim().toLowerCase();
+  var err=document.getElementById('lookup-err');
+  if(!email || !email.endsWith('@ofti.app')){
+    if(err){err.textContent='⚠️ Please enter a valid @ofti.app email.';err.style.display='block';}
+    return;
+  }
+  var stored={};
+  try{ stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){}
+  var saved=stored[email];
+  if(!saved || typeof saved!=='object' || Object.keys(saved).length===0){
+    if(err){err.textContent='⚠️ No predictions found for this email. Predictions may have been submitted on another device.';err.style.display='block';}
+    return;
+  }
+  var title=document.getElementById('lookup-title');
+  var sub=document.getElementById('lookup-sub');
+  if(title) title.textContent='My Round of 32 Picks';
+  if(sub) sub.textContent='Submitted as: '+email;
+  renderBracketIn('lookup-bracket', saved, false);
+  showPage('page-lookup');
+}
 </script>
 
 <!-- DEBUG PANEL — remove before production or keep hidden -->
@@ -1074,5 +1104,52 @@ document.addEventListener('DOMContentLoaded',()=>{
   </div>
   <div id="debug-log"></div>
 </div>
+
+<div id="page-closed" class="pg">
+  <div class="grp-hero">
+    <div class="kicker">Ooredoo Fintech · World Cup Mania 2026</div>
+    <h2>Round of 32 — Predictions Closed</h2>
+  </div>
+  <div class="wrap">
+
+    <!-- Leaderboard card -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title" style="font-size:18px;margin-bottom:4px">🏆 Leaderboard</div>
+      <p style="color:#a0aec0;font-size:13px;margin:0 0 16px">Round of 32 submissions are now closed.<br/>Results announced: <strong style="color:#f6c90e">July 4, 11AM</strong></p>
+      <div id="lb-closed"></div>
+    </div>
+
+    <!-- View my predictions card -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title" style="font-size:16px;margin-bottom:6px">🔍 View My Predictions</div>
+      <p style="color:#a0aec0;font-size:13px;margin:0 0 14px">Enter your @ofti.app email to view your submitted predictions.</p>
+      <div class="inp-wrap" style="margin-bottom:10px">
+        <input type="email" id="lookup-email" placeholder="abc_cc@ofti.app" autocomplete="email"
+          oninput="clearLookupErr()"
+          onkeydown="if(event.key==='Enter')lookupPredictions()"/>
+        <span class="inp-ico">✉️</span>
+      </div>
+      <div id="lookup-err" class="err" style="display:none;margin-bottom:8px">⚠️ No predictions found for this email.</div>
+      <button class="btn pri" style="width:100%" onclick="lookupPredictions()">View My Predictions →</button>
+    </div>
+
+    <p style="font-size:11px;color:#6b7f94;margin-top:4px;text-align:center">✅ One submission per participant — yours is locked in.<br/>Ooredoo Fintech · World Cup Mania 2026</p>
+  </div>
+</div>
+
+<!-- Lookup result page -->
+<div id="page-lookup" class="pg">
+  <div class="grp-hero">
+    <div class="kicker">Your Prediction Journey</div>
+    <h2 id="lookup-title">My Round of 32 Picks</h2>
+  </div>
+  <div class="wrap">
+    <div class="card" style="margin-bottom:16px">
+      <p id="lookup-sub" style="color:#a0aec0;font-size:13px;margin:0 0 16px;text-align:center"></p>
+      <div id="lookup-bracket"></div>
+    </div>
+    <button class="btn sec" style="width:100%;margin-bottom:12px" onclick="showPage('page-closed')">← Back to Leaderboard</button>
+  </div>
+</div>
+
 </body>
-</html>

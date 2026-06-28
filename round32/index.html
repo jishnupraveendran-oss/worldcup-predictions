@@ -150,7 +150,7 @@ body{font-family:'Inter',sans-serif;background:#07111f;color:#f7fbff;min-height:
       <div class="card-title">Enter Your Details</div>
       <div class="card-sub">Enter your full name and company email to get started.</div>
       <div class="inp-wrap" style="margin-bottom:12px">
-        <input type="text" id="name-input" placeholder="Full Name (e.g. Jishnu Raveendran)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
+        <input type="text" id="name-input" placeholder="Full Name (e.g. Lionel messi)" autocomplete="name" oninput="validateName()" onkeydown="if(event.key==='Enter')document.getElementById('email-input').focus()"/>
         <span class="inp-ico">&#128100;</span>
       </div>
       <div id="name-err" class="err" style="display:none">&#9888; Please enter your full name.</div>
@@ -715,13 +715,13 @@ const MATCH_META = {
   M4:{label:"Match 4",teams:["France","Sweden"],flag1:"https://flagcdn.com/w80/fr.png",flag2:"https://flagcdn.com/w80/se.png"},
   M5:{label:"Match 5",teams:["Belgium","Senegal"],flag1:"https://flagcdn.com/w80/be.png",flag2:"https://flagcdn.com/w80/sn.png"},
   M6:{label:"Match 6",teams:["USA","Bosnia & Herz."],flag1:"https://flagcdn.com/w80/us.png",flag2:"https://flagcdn.com/w80/ba.png"},
-  M7:{label:"Match 7",teams:["Spain","TBD"],flag1:"https://flagcdn.com/w80/es.png",flag2:""},
+  M7:{label:"Match 7",teams:["Spain","Austria"],flag1:"https://flagcdn.com/w80/es.png",flag2:"https://flagcdn.com/w80/at.png"},
   M8:{label:"Match 8",teams:["Portugal","Croatia"],flag1:"https://flagcdn.com/w80/pt.png",flag2:"https://flagcdn.com/w80/hr.png"},
   M9:{label:"Match 9",teams:["Brazil","Japan"],flag1:"https://flagcdn.com/w80/br.png",flag2:"https://flagcdn.com/w80/jp.png"},
   M10:{label:"Match 10",teams:["Ivory Coast","Norway"],flag1:"https://flagcdn.com/w80/ci.png",flag2:"https://flagcdn.com/w80/no.png"},
   M11:{label:"Match 11",teams:["Mexico","Ecuador"],flag1:"https://flagcdn.com/w80/mx.png",flag2:"https://flagcdn.com/w80/ec.png"},
   M12:{label:"Match 12",teams:["England","DR Congo"],flag1:"https://flagcdn.com/w80/gb-eng.png",flag2:"https://flagcdn.com/w80/cd.png"},
-  M13:{label:"Match 13",teams:["Switzerland","TBD"],flag1:"https://flagcdn.com/w80/ch.png",flag2:""},
+  M13:{label:"Match 13",teams:["Switzerland","Algeria"],flag1:"https://flagcdn.com/w80/ch.png",flag2:"https://flagcdn.com/w80/dz.png"},
   M14:{label:"Match 14",teams:["Colombia","Ghana"],flag1:"https://flagcdn.com/w80/co.png",flag2:"https://flagcdn.com/w80/gh.png"},
   M15:{label:"Match 15",teams:["Australia","Egypt"],flag1:"https://flagcdn.com/w80/au.png",flag2:"https://flagcdn.com/w80/eg.png"},
   M16:{label:"Match 16",teams:["Argentina","Cape Verde"],flag1:"https://flagcdn.com/w80/ar.png",flag2:"https://flagcdn.com/w80/cv.png"}
@@ -876,7 +876,10 @@ function renderBracketIn(targetId, p, editable){
   }).join('');
   const centerHtml='<div class="b-center-label">ROUND OF 16</div>'+
     R16_PAIRS.map(([a,b])=>{
-      const wa=p[a]||'TBD',wb=p[b]||'TBD';
+      const _ta=MATCH_META[a]?MATCH_META[a].teams:[];
+      const _tb=MATCH_META[b]?MATCH_META[b].teams:[];
+      const wa=(_ta.includes(p[a])?p[a]:null)||(_ta.length?'?':'TBD');
+      const wb=(_tb.includes(p[b])?p[b]:null)||(_tb.length?'?':'TBD');
       return '<div class="b-r16">'+wa+' vs '+wb+'</div>';
     }).join('')+'<div class="b-cup">🏆</div>';
   bg.innerHTML='<div class="b-col">'+makeCol(left)+'</div>'+

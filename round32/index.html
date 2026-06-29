@@ -1066,16 +1066,16 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
+
 function lookupPredictions(){
   var rawEmail=(document.getElementById('lookup-email').value||'').trim().toLowerCase();
   var err=document.getElementById('lookup-err');
   var btn=document.querySelector('#page-closed .btn.pri');
 
-  if(!rawEmail || !rawEmail.endsWith('@ofti.app')){
+  if(!rawEmail||!rawEmail.endsWith('@ofti.app')){
     if(err){err.textContent='⚠️ Please enter a valid @ofti.app email.';err.style.display='block';}
     return;
   }
-
   if(btn){btn.textContent='Looking up...';btn.disabled=true;}
   if(err) err.style.display='none';
 
@@ -1095,19 +1095,13 @@ function lookupPredictions(){
     clearTimeout(timer);
     var old=document.getElementById('_jsonp_lookup');if(old)old.remove();
     if(btn){btn.textContent='View My Predictions →';btn.disabled=false;}
-
-    if(data && data.found && data.picks){
+    if(data&&data.already&&data.picks){
       var sub=document.getElementById('lookup-sub');
-      var title=document.getElementById('lookup-title');
-      if(title) title.textContent='My Round of 32 Picks';
-      if(sub) sub.innerHTML='Submitted as: <strong style="color:#f6c90e">'+rawEmail+'</strong>';
-      renderBracketIn('lookup-bracket', data.picks, false);
+      if(sub)sub.innerHTML='Submitted as: <strong style="color:#f6c90e">'+rawEmail+'</strong>';
+      renderBracketIn('lookup-bracket',data.picks,false);
       showPage('page-lookup');
     } else {
-      if(err){
-        err.textContent='⚠️ No predictions found for this email.';
-        err.style.display='block';
-      }
+      if(err){err.textContent='⚠️ No predictions found for this email.';err.style.display='block';}
     }
   };
 
@@ -1120,7 +1114,7 @@ function lookupPredictions(){
   };
 
   var p=new URLSearchParams();
-  p.set('action','lookup');
+  p.set('check','1');
   p.set('email',rawEmail);
   p.set('tab',SHEET_TAB);
   p.set('k',_k);
@@ -1149,26 +1143,51 @@ function lookupPredictions(){
   </div>
   <div class="wrap">
 
+    <!-- Status banner -->
+    <div class="card" style="margin-bottom:16px;text-align:center;background:linear-gradient(135deg,rgba(179,0,16,.15),rgba(246,201,14,.08));border:1px solid rgba(246,201,14,.2)">
+      <div style="font-size:28px;margin-bottom:8px">⚽</div>
+      <div style="font-weight:800;font-size:16px;color:#fff;margin-bottom:6px">Round of 32 Predictions are Closed</div>
+      <div style="font-size:13px;color:#a0aec0;margin-bottom:10px">If you missed it, don't worry —<br/><strong style="color:#f6c90e">Round of 16 Form will open soon!</strong></div>
+      <div style="font-size:11px;color:#6b7f94;background:rgba(255,255,255,.04);border-radius:8px;padding:6px 12px;display:inline-block">
+        🗓 Leaderboard updated: <strong style="color:#a0aec0">28 June 2026</strong> &nbsp;·&nbsp; Results announced: <strong style="color:#a0aec0">July 4, 11AM</strong>
+      </div>
+    </div>
+
     <!-- Leaderboard card -->
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title" style="font-size:18px;margin-bottom:4px">🏆 Leaderboard</div>
-      <p style="color:#a0aec0;font-size:13px;margin:0 0 16px">Round of 32 submissions are now closed.<br/>Results announced: <strong style="color:#f6c90e">July 4, 11AM</strong></p>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title" style="font-size:18px;margin-bottom:12px">🏆 Leaderboard</div>
       <div id="lb-closed"></div>
+    </div>
+
+    <!-- View my predictions card -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title" style="font-size:15px;margin-bottom:6px">🔍 View My Round of 32 Predictions</div>
+      <p style="color:#a0aec0;font-size:13px;margin:0 0 14px">Enter your @ofti.app email to see your submitted picks.</p>
+      <div class="inp-wrap" style="margin-bottom:10px">
+        <input type="email" id="lookup-email" placeholder="abc_cc@ofti.app" autocomplete="email"
+          onkeydown="if(event.key==='Enter')lookupPredictions()"/>
+        <span class="inp-ico">✉️</span>
+      </div>
+      <div id="lookup-err" class="err" style="display:none;margin-bottom:8px"></div>
+      <button class="btn pri" style="width:100%" onclick="lookupPredictions()">View My Predictions →</button>
     </div>
 
     <p style="font-size:11px;color:#6b7f94;margin-top:4px;text-align:center">✅ One submission per participant — yours is locked in.<br/>Ooredoo Fintech · World Cup Mania 2026</p>
   </div>
 </div>
 
-    <h2 id="lookup-title">My Round of 32 Picks</h2>
+<!-- Lookup result page -->
+<div id="page-lookup" class="pg">
+  <div class="grp-hero">
+    <div class="kicker">Your Prediction Journey · Round of 32</div>
+    <h2>My Picks</h2>
   </div>
   <div class="wrap">
     <div class="card" style="margin-bottom:16px">
       <p id="lookup-sub" style="color:#a0aec0;font-size:13px;margin:0 0 16px;text-align:center"></p>
       <div id="lookup-bracket"></div>
     </div>
-    <button class="btn sec" style="width:100%;margin-bottom:12px" onclick="showPage('page-closed')">← Back to Leaderboard</button>
+    <button class="btn sec" style="width:100%;margin-bottom:20px" onclick="showPage('page-closed')">← Back to Leaderboard</button>
   </div>
 </div>
-
 </body>
